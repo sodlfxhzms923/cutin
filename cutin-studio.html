@@ -1,0 +1,2006 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>컷인 스튜디오</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Gaegu:wght@700&family=Gowun+Dodum&family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* 웹폰트를 못 받는 환경에서도 제목이 가늘어지지 않도록, 시스템 굵은 글꼴을 400 굵기로 묶어 둡니다 */
+@font-face{font-family:"Display Fallback";font-weight:400;src:local("Malgun Gothic Bold"),local("MalgunGothicBold"),local("Apple SD Gothic Neo Bold"),local("AppleSDGothicNeo-Bold"),local("Noto Sans CJK KR Black"),local("Noto Sans KR Black"),local("Noto Sans CJK KR Bold"),local("NanumGothic ExtraBold")}
+:root{
+  /* 원고지 한 장: 잉크 선, 논포토 블루 연필 가이드, 그리고 PPL 자리에만 긋는 형광 노랑 */
+  --ink:#15161C; --ink-2:#3C3F4C; --ink-3:#6B7080;
+  --line:#D3D8E0; --line-2:#E8EBF0;
+  --paper:#FFFFFF; --desk:#EEF1F5;
+  --blue:#2E93C6; --blue-soft:#B5DDF0; --blue-tint:#E9F5FB;
+  --ppl:#FFD91A; --ppl-soft:#FFF4B0;
+  --ok:#12805C; --warn:#B8500C; --bad:#C2203F;
+  --f-display:"Black Han Sans","Display Fallback","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  --f-body:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
+  --f-bubble:"Gowun Dodum","IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  --f-hand:"Gaegu","Gowun Dodum","Apple SD Gothic Neo",sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{font-family:var(--f-body);font-size:14px;line-height:1.5;color:var(--ink);background:var(--desk);-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+h1,h2,h3,p{margin:0}
+:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+[hidden]{display:none!important}
+
+/* ── 틀 ───────────────────────────── */
+.app{display:grid;grid-template-columns:232px minmax(0,1fr);height:100%}
+.rail{background:var(--ink);color:#fff;display:flex;flex-direction:column;min-height:0;overflow:auto}
+.brand{display:flex;gap:11px;align-items:center;padding:20px 18px 18px}
+.brand b{display:block;font-family:var(--f-display);font-weight:400;font-size:20px;letter-spacing:.01em;line-height:1.15}
+.brand span{display:block;font-size:11.5px;color:#A9AEBD;margin-top:2px}
+.steps{display:flex;flex-direction:column;gap:2px;padding:6px 10px}
+.step{display:grid;grid-template-columns:34px 1fr;grid-template-rows:auto auto;column-gap:10px;align-items:center;text-align:left;background:none;border:0;border-radius:6px;padding:9px 8px;color:#C4C8D4}
+.step:hover{background:#22242E}
+.step .no{grid-row:1/3;font:600 12px var(--f-mono);width:34px;height:34px;display:grid;place-items:center;border:1.5px solid #4A4E5E;border-radius:4px;color:#C4C8D4}
+.step .nm{font-weight:600;font-size:14px;line-height:1.25}
+.step .meta{font-size:11.5px;color:#8C91A2;line-height:1.3}
+.step.done .no{border-color:var(--blue-soft);color:var(--blue-soft)}
+.step.on{background:#262833;color:#fff}
+.step.on .no{background:var(--ppl);border-color:var(--ppl);color:var(--ink)}
+.step.on .meta{color:#C4C8D4}
+.rail-foot{margin-top:auto;padding:12px 10px 14px}
+.conn{display:flex;gap:10px;align-items:center;width:100%;text-align:left;background:#22242E;border:1px solid #363947;border-radius:6px;padding:9px 10px;color:#fff}
+.conn:hover{border-color:#5A5F73}
+.conn i{flex:none;width:9px;height:9px;border-radius:50%;background:var(--blue-soft)}
+.conn.live i{background:#3DDC97}
+.conn b{display:block;font-size:12.5px;font-weight:600;line-height:1.3}
+.conn small{display:block;font-size:11px;color:#9A9FB0;line-height:1.35;overflow-wrap:anywhere}
+
+.work{display:flex;flex-direction:column;min-width:0;min-height:0}
+.top{display:flex;align-items:center;gap:8px;height:54px;flex:none;padding:0 20px;background:var(--paper);border-bottom:1.5px solid var(--ink)}
+.pname{border:1px solid transparent;border-radius:5px;padding:5px 8px;font-weight:700;font-size:15px;background:transparent;min-width:0;flex:0 1 300px}
+.pname:hover{border-color:var(--line)}
+.sp{flex:1}
+.batch{display:flex;align-items:center;gap:10px;font-size:12.5px;font-weight:600;margin-right:6px}
+.batch .bar{width:120px;height:8px;border:1.5px solid var(--ink);border-radius:2px;background:#fff;overflow:hidden}
+.batch .bar i{display:block;height:100%;background:var(--ink);transition:width .25s}
+.stage{flex:1;min-height:0;overflow:auto;padding:26px 30px 40px;background-color:var(--desk);background-image:radial-gradient(var(--blue-soft) 1px,transparent 1.3px);background-size:18px 18px}
+.stage>*{max-width:1280px;margin-left:auto;margin-right:auto}
+
+/* ── 공통 부품 ─────────────────────── */
+.demobar{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;background:var(--blue-tint);border:1px solid var(--blue-soft);border-radius:6px;padding:8px 12px;font-size:13px;margin-bottom:18px}
+.demobar b{font-weight:700}
+.lnk{background:none;border:0;padding:0;font-weight:600;text-decoration:underline;text-underline-offset:3px}
+.sh{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:14px 24px;margin-bottom:20px}
+.sh .no{font:600 11.5px var(--f-mono);letter-spacing:.08em;color:var(--ink-3);margin-bottom:6px}
+.sh h1{font-family:var(--f-display);font-weight:400;font-size:34px;line-height:1.15;letter-spacing:.005em;text-wrap:balance}
+.sh .lead{color:var(--ink-2);max-width:60ch;margin-top:4px}
+.sh-a{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.count{font:600 12.5px var(--f-mono);color:var(--ink-2);margin-right:4px}
+
+.card{background:var(--paper);border:1px solid var(--line);border-radius:8px}
+.sec{padding:18px 20px;display:flex;flex-direction:column;gap:14px}
+.sec h2{font-size:15.5px;font-weight:700;line-height:1.3}
+.sec .sub{color:var(--ink-3);font-size:13px;margin-top:-8px}
+.two{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:20px;align-items:start}
+.col{display:flex;flex-direction:column;gap:16px;min-width:0}
+.sticky{position:sticky;top:0}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;border:1.5px solid var(--ink);background:var(--paper);border-radius:6px;padding:7px 14px;font-weight:600;font-size:13.5px;line-height:1.3;white-space:nowrap;text-decoration:none;color:var(--ink)}
+.btn:hover{background:var(--line-2)}
+.btn.pri,.btn.gen{background:var(--ink);color:#fff}
+.btn.pri:hover,.btn.gen:hover{background:#2C2E3A}
+.btn.gen::before{content:"✦";font-size:11px;color:var(--ppl)}
+.btn.sm{padding:5px 10px;font-size:12.5px}
+.btn.ghost{border-color:transparent;background:transparent}
+.btn.ghost:hover{background:var(--line-2)}
+.btn.danger{border-color:var(--bad);color:var(--bad)}
+.btn.wide{width:100%}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.icon{display:inline-grid;place-items:center;width:28px;height:28px;border:1px solid transparent;border-radius:5px;background:none;color:var(--ink-2);padding:0;flex:none}
+.icon:hover{background:var(--line-2);color:var(--ink)}
+.icon.on{background:var(--ink);color:#fff}
+.icon svg,.btn svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+
+.field{display:flex;flex-direction:column;gap:5px;min-width:0}
+.lb{font-size:12px;font-weight:600;color:var(--ink-2)}
+.hint{font-size:12px;color:var(--ink-3);line-height:1.45}
+.in{width:100%;border:1px solid var(--line);border-radius:6px;padding:8px 10px;background:#fff;line-height:1.45}
+.in:hover{border-color:#B4BAC6}
+.in:focus{outline:2px solid var(--blue);outline-offset:0;border-color:var(--blue)}
+textarea.in{resize:vertical;min-height:38px}
+select.in{padding-right:26px}
+.in.mono{font:500 12px/1.5 var(--f-mono)}
+.fg2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:#fff;border-radius:999px;padding:4px 12px;font-size:13px;line-height:1.4}
+.chip:hover{border-color:var(--ink)}
+.chip[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
+.chip .sw{display:inline-flex}
+.chip .sw i{width:9px;height:9px;border-radius:50%;border:1px solid rgba(0,0,0,.25);margin-left:-3px}
+.chip .sw i:first-child{margin-left:0}
+.seg{display:inline-flex;border:1.5px solid var(--ink);border-radius:6px;overflow:hidden;background:#fff;max-width:100%;flex-wrap:wrap}
+.field>.seg,.opt>.seg{align-self:flex-start}
+.seg button{border:0;border-right:1px solid var(--line);background:none;padding:5px 12px;font-size:13px;font-weight:500}
+.seg button:last-child{border-right:0}
+.seg button:hover{background:var(--line-2)}
+.seg button[aria-pressed="true"]{background:var(--ink);color:#fff}
+.tag{display:inline-block;font:600 10.5px var(--f-mono);letter-spacing:.04em;padding:2px 6px;border-radius:3px;border:1px solid var(--ink);background:#fff;white-space:nowrap}
+.tag.blue{border-color:var(--blue);color:var(--blue);background:var(--blue-tint)}
+.tag.ppl{background:var(--ppl);border-color:var(--ink)}
+mark{background:var(--ppl);color:var(--ink);padding:0 4px;border-radius:2px;font:600 10.5px var(--f-mono)}
+.empty{border:1.5px dashed var(--blue);background:rgba(255,255,255,.75);border-radius:8px;padding:38px 20px;text-align:center;display:flex;flex-direction:column;gap:12px;align-items:center}
+.empty b{font-size:15px}
+.empty p{color:var(--ink-2);max-width:46ch}
+.note{background:var(--ppl-soft);border:1px solid #E6C200;border-radius:6px;padding:9px 12px;font-size:13px;margin-bottom:16px}
+.fnav{display:flex;justify-content:space-between;gap:10px;margin-top:28px}
+details>summary{cursor:pointer;font-size:12.5px;font-weight:600;color:var(--ink-2)}
+pre.raw{margin:8px 0 0;padding:10px;background:var(--desk);border-radius:6px;font:500 11.5px/1.55 var(--f-mono);white-space:pre-wrap;word-break:break-word;max-height:260px;overflow:auto}
+.spin{width:18px;height:18px;border:2.5px solid var(--line);border-top-color:var(--ink);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.busy{position:absolute;inset:0;background:rgba(255,255,255,.84);display:flex;flex-direction:column;gap:8px;align-items:center;justify-content:center;font-size:12.5px;font-weight:600;z-index:6}
+svg.sk{display:block;width:100%;height:100%}
+
+/* ── 01 브리프 ─────────────────────── */
+.uploads{display:flex;flex-wrap:wrap;gap:8px}
+.up{position:relative;width:76px;height:76px;border:1.5px solid var(--ink);border-radius:4px;overflow:hidden;background:#fff}
+.up img{width:100%;height:100%;object-fit:contain}
+.up .icon{position:absolute;top:2px;right:2px;width:20px;height:20px;background:rgba(255,255,255,.92);border-color:var(--line)}
+.up-add{display:grid;place-items:center;width:76px;height:76px;border:1.5px dashed var(--ink-3);border-radius:4px;color:var(--ink-2);font-size:12px;font-weight:600;cursor:pointer;text-align:center;line-height:1.3}
+.up-add:hover{border-color:var(--ink);background:#fff}
+.scale{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+.scale button{display:flex;flex-direction:column;gap:6px;text-align:left;border:1px solid var(--line);background:#fff;border-radius:6px;padding:9px}
+.scale button:hover{border-color:var(--ink)}
+.scale .bar{display:block;position:relative;height:30px;border:1.5px solid var(--ink);border-radius:2px;background:#fff;overflow:hidden}
+.scale .bar i{position:absolute;left:0;right:0;bottom:0;height:calc(var(--n)*20%);background:var(--ppl)}
+.scale b{font-size:13px;line-height:1.3}
+.scale small{font-size:11.5px;color:var(--ink-3);line-height:1.35}
+.scale button[aria-pressed="true"]{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink);background:var(--ppl-soft)}
+.chk{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:5px;font-size:13px}
+.chk li{display:flex;gap:8px;align-items:center;color:var(--ink-3)}
+.chk li::before{content:"";width:13px;height:13px;border:1.5px solid var(--ink-3);border-radius:3px;flex:none}
+.chk li.ok{color:var(--ink)}
+.chk li.ok::before{background:var(--ink);border-color:var(--ink);box-shadow:inset 0 0 0 2px #fff}
+.sum{margin:0;display:grid;grid-template-columns:auto 1fr;gap:6px 12px;font-size:13px}
+.sum dt{color:var(--ink-3);font-weight:600;font-size:12px;padding-top:1px}
+.sum dd{margin:0}
+
+/* ── 02·03 캐릭터·배경 ─────────────── */
+.promptbar{display:flex;flex-wrap:wrap;gap:10px 12px;align-items:center;padding:12px 14px;margin-bottom:18px}
+.promptbar .in{flex:1 1 240px;width:auto}
+.promptbar .lb{flex:none}
+.grid{display:grid;gap:18px;grid-template-columns:repeat(auto-fill,minmax(236px,1fr))}
+.grid.bg{grid-template-columns:repeat(auto-fill,minmax(320px,1fr))}
+.ent{display:flex;flex-direction:column;background:var(--paper);border:1.5px solid var(--ink);border-radius:4px;overflow:hidden}
+.pic{position:relative;display:block;width:100%;padding:0;border:0;border-bottom:1.5px solid var(--ink);background:#fff;overflow:hidden}
+.pic.char{aspect-ratio:3/4}.pic.bg{aspect-ratio:16/9}
+.pic img{display:block;width:100%;height:100%;object-fit:cover}
+.pic .tag{position:absolute;left:8px;top:8px;z-index:2}
+.ent-b{padding:12px 14px 14px;display:flex;flex-direction:column;gap:7px;flex:1}
+.ent-h{display:flex;align-items:center;gap:8px}
+.ent-h h3{font-size:16px;font-weight:700;line-height:1.3;min-width:0;overflow-wrap:anywhere}
+.ent-h .tag{flex:none}
+.ent-h .icon{margin-left:auto}
+.ent .meta{font-size:12px;color:var(--ink-3)}
+.ent .desc{font-size:13px;color:var(--ink-2);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.ent .pplnote{font-size:12.5px;color:var(--ink-2)}
+.ent-a{display:flex;gap:6px;margin-top:auto;padding-top:6px}
+
+.dr-bg,.mo-bg{position:fixed;inset:0;background:rgba(21,22,28,.32);z-index:40}
+.dr{position:fixed;top:0;right:0;bottom:0;width:min(440px,100%);background:var(--paper);border-left:1.5px solid var(--ink);z-index:41;display:flex;flex-direction:column;box-shadow:-12px 0 40px rgba(21,22,28,.16)}
+.dr header{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--line)}
+.dr header h2{font-size:16px;font-weight:700}
+.dr-body{flex:1;overflow:auto;padding:16px 18px 20px;display:flex;flex-direction:column;gap:13px}
+.dr .pic{border:1.5px solid var(--ink);border-radius:4px}
+.dr .pic.char{max-width:240px;align-self:center}
+.vars{display:flex;flex-wrap:wrap;gap:6px}
+.vars button{width:48px;height:48px;padding:0;border:1.5px solid var(--line);border-radius:4px;overflow:hidden;background:#fff}
+.vars button.on{border-color:var(--ink);box-shadow:0 0 0 2px var(--blue)}
+.vars img{width:100%;height:100%;object-fit:cover;display:block}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+
+/* ── 04 시나리오 ───────────────────── */
+.sc-top{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;margin-bottom:18px}
+.tl{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:5px;height:78px;border-bottom:1.5px solid var(--ink)}
+.tl button{display:flex;flex-direction:column;justify-content:flex-end;height:100%;padding:0;border:0;background:none}
+.tl i{display:block;height:calc(var(--h)*1%);background:var(--ppl);border:1.5px solid var(--ink);border-bottom:0}
+.tl i.z{height:4px;background:var(--line);border:0}
+.tl button:hover i{filter:brightness(.93)}
+.tl-x{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:5px;margin-top:4px;font:500 10px var(--f-mono);color:var(--ink-3);text-align:center}
+.tl-k{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:11.5px;color:var(--ink-3)}
+.tl-k span{display:inline-flex;align-items:flex-end;gap:5px}
+.tl-k i{display:inline-block;width:9px;height:calc(var(--h)*.14px);background:var(--ppl);border:1px solid var(--ink)}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.stat{border:1px solid var(--line);border-radius:6px;padding:8px 10px}
+.stat b{display:block;font:600 18px/1.2 var(--f-mono);font-variant-numeric:tabular-nums}
+.stat span{font-size:11.5px;color:var(--ink-3)}
+.stat.ok{border-color:var(--ok)}.stat.ok b{color:var(--ok)}
+.stat.warn{border-color:var(--warn)}.stat.warn b{color:var(--warn)}
+.hints{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:5px;font-size:12.5px}
+.hints li{display:flex;gap:8px;align-items:baseline}
+.hints li::before{content:"";flex:none;width:7px;height:7px;border-radius:50%;background:var(--warn);transform:translateY(-1px)}
+.hints li.ok::before{background:var(--ok)}
+.cuts{display:flex;flex-direction:column;gap:14px}
+.cut{display:grid;grid-template-columns:124px minmax(0,1fr) 208px;gap:16px;background:var(--paper);border:1.5px solid var(--ink);border-radius:4px;padding:14px;scroll-margin-top:12px}
+.cut-l{display:flex;flex-direction:column;gap:8px}
+.cno{font:600 19px/1 var(--f-mono);letter-spacing:.02em}
+.thumb{position:relative;border:1.5px solid var(--ink);border-radius:2px;overflow:hidden;background:#fff}
+.thumb img{display:block;width:100%;height:100%;object-fit:cover}
+.mv{display:flex;gap:2px;flex-wrap:wrap}
+.cut-m{display:flex;flex-direction:column;gap:11px;min-width:0}
+.cut-r{display:flex;flex-direction:column;gap:8px;border-left:1px solid var(--line);padding-left:16px;min-width:0}
+.pplsel{display:flex;flex-direction:column;gap:3px}
+.pplsel button{display:flex;align-items:center;gap:8px;border:1px solid transparent;border-radius:5px;background:none;padding:4px 7px;font-size:12.5px;text-align:left}
+.pplsel button:hover{background:var(--line-2)}
+.pplsel i{flex:none;width:26px;height:10px;border:1.5px solid var(--ink);border-radius:2px;background:linear-gradient(90deg,var(--ppl) calc(var(--h)*1%),#fff 0)}
+.pplsel button.on{border-color:var(--ink);background:var(--ppl-soft);font-weight:600}
+.rw{display:flex;flex-direction:column;gap:6px;margin-top:auto;padding-top:8px;border-top:1px dashed var(--line)}
+.lines{display:flex;flex-direction:column;gap:6px}
+.ln{display:flex;gap:5px;align-items:center}
+.ln select.in{flex:none;width:auto;padding:6px 22px 6px 7px;font-size:12.5px}
+.ln input.in{flex:1;min-width:60px;padding:6px 9px}
+.lines>.btn{align-self:flex-start}
+.insp .ln{flex-wrap:wrap}
+.insp .ln select.in{flex:1 1 0;min-width:0}
+.insp .ln input.in{order:9;flex:1 1 100%}
+.insp .ln .icon:first-of-type{margin-left:auto}
+
+/* ── 05 웹툰 ───────────────────────── */
+.wt{display:grid;grid-template-columns:minmax(0,1fr) 384px;gap:22px;align-items:start}
+.strip-wrap{display:flex;justify-content:center}
+.strip{width:min(460px,100%);background:#fff;border:1.5px solid var(--ink);container-type:inline-size;display:flex;flex-direction:column}
+.gap{flex:none;background:#fff}
+.panel{position:relative;container-type:inline-size;overflow:hidden;cursor:pointer;background:#fff}
+.panel>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.panel>svg.sk{position:absolute;inset:0}
+.panel.sel{outline:3px solid var(--blue);outline-offset:-3px}
+.panel.sel::after{content:"";position:absolute;inset:0;border:3px solid var(--blue);pointer-events:none;z-index:5}
+.ptags{position:absolute;left:6px;top:6px;display:flex;gap:4px;z-index:4;pointer-events:none}
+.strip.clean .ptags{display:none}
+.bub{position:absolute;transform:translate(-50%,-50%);width:max-content;z-index:3;color:#15161C}
+.strip .bub{cursor:grab;touch-action:none;user-select:none}
+.strip .bub:active{cursor:grabbing}
+.bub .tx{position:relative;z-index:3;display:block;white-space:pre-wrap;word-break:keep-all;overflow-wrap:break-word;text-align:center;line-height:1.35}
+.bub svg.shape{position:absolute;inset:0;width:100%;height:100%;overflow:visible;z-index:1}
+.bub svg.shape *{fill:#fff;stroke:#15161C;stroke-width:max(1.5px,.45cqw);vector-effect:non-scaling-stroke;stroke-linejoin:round}
+.b-think svg.shape *{stroke-dasharray:1.6cqw 1.1cqw}
+.bub svg.tail{position:absolute;width:1.2em;height:1.08em;bottom:-.78em;overflow:visible;z-index:0}
+.bub svg.tail path{fill:#fff;stroke:#15161C;stroke-width:max(1.5px,.45cqw);vector-effect:non-scaling-stroke;stroke-linejoin:round}
+.bub svg.tail.patch{z-index:2}
+.bub svg.tail.patch path{stroke:none}
+.bub .tail.left{left:34%}.bub .tail.right{right:34%}
+.bub .dots{position:absolute;bottom:0;z-index:0}
+.bub .dots.left{left:34%}.bub .dots.right{right:34%}
+.bub .dots i{position:absolute;border-radius:50%;background:#fff;border:max(1.5px,.45cqw) solid #15161C}
+.bub .dots i:nth-child(1){width:.56em;height:.56em;top:.02em;left:.1em}
+.bub .dots i:nth-child(2){width:.34em;height:.34em;top:.62em;left:0}
+.bub .dots.right i:nth-child(2){left:.46em}
+.b-sfx .tx{-webkit-text-stroke:.18em #fff;paint-order:stroke fill;transform:rotate(-6deg);letter-spacing:.02em}
+.tcard,.ecard{position:relative;container-type:inline-size;background:#fff;color:#15161C;overflow:hidden}
+.tcard{aspect-ratio:12/5;border-bottom:.45cqw solid #15161C}
+.tcard.slim{aspect-ratio:auto;height:7.5cqw;border-bottom:.3cqw solid #15161C}
+.disc{position:absolute;left:5.5cqw;top:5cqw;font:600 2.9cqw/1 var(--f-body);border:.35cqw solid #15161C;padding:1.1cqw 1.8cqw;background:#fff}
+.tcard.slim .disc{top:50%;transform:translateY(-50%);border:0;padding:0;font-size:2.7cqw}
+.tc-t{position:absolute;left:5.5cqw;right:5.5cqw;bottom:5cqw}
+.tc-t b{display:block;font:400 7.8cqw/1.14 var(--f-display)}
+.tc-t span{display:block;font:500 3.3cqw/1.4 var(--f-body);color:#3C3F4C;margin-top:1.6cqw}
+.ecard{aspect-ratio:2/1;border-top:.45cqw solid #15161C}
+.ec-l{position:absolute;left:5.5cqw;top:6cqw;width:54cqw}
+.ec-l small{display:block;font:600 2.5cqw/1 var(--f-mono);color:#6B7080;letter-spacing:.06em}
+.ec-l b{display:block;font:400 6.4cqw/1.15 var(--f-display);margin-top:2cqw}
+.ec-l em{display:block;font:600 3.6cqw/1.3 var(--f-body);font-style:normal;margin-top:1.4cqw}
+.ec-l span{display:block;font:400 3.1cqw/1.45 var(--f-body);color:#3C3F4C;margin-top:1.6cqw}
+.ec-img{position:absolute;right:5.5cqw;top:6cqw;bottom:6cqw;width:30cqw;object-fit:contain}
+.ec-d{position:absolute;left:5.5cqw;bottom:4.5cqw;font:500 2.5cqw/1 var(--f-body);color:#6B7080}
+.insp{position:sticky;top:0;padding:16px;display:flex;flex-direction:column;gap:14px;max-height:calc(100vh - 110px);overflow:auto}
+.insp-h{display:flex;align-items:baseline;gap:10px}
+.insp-h span{color:var(--ink-2);font-size:13px}
+.refs{display:flex;flex-wrap:wrap;gap:6px}
+.ref{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:5px;padding:3px 8px 3px 3px;font-size:12px;background:#fff}
+.ref img,.ref .ph{width:26px;height:26px;border-radius:3px;object-fit:cover;flex:none}
+.ref .ph{border:1px dashed var(--blue);background:var(--blue-tint)}
+.ref.miss{color:var(--ink-3)}
+
+/* ── 06 검수·내보내기 ──────────────── */
+.ex{display:grid;grid-template-columns:minmax(0,1fr) 400px;gap:20px;align-items:start}
+.review{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.review li{display:flex;gap:11px;align-items:flex-start;padding:10px 0;border-top:1px solid var(--line-2)}
+.review li:first-child{border-top:0;padding-top:0}
+.review li>i{flex:none;width:20px;height:20px;border-radius:50%;display:grid;place-items:center;font:700 12px/1 var(--f-mono);font-style:normal;color:#fff;margin-top:1px}
+.review li.ok>i{background:var(--ok)}.review li.ok>i::before{content:"✓"}
+.review li.warn>i{background:var(--warn)}.review li.warn>i::before{content:"!"}
+.review li.bad>i{background:var(--bad)}.review li.bad>i::before{content:"×"}
+.review li div{flex:1;min-width:0}
+.review b{font-size:13.5px}
+.review p{font-size:12.5px;color:var(--ink-2)}
+.manual{display:flex;flex-direction:column;gap:6px}
+.manual label{display:flex;gap:8px;align-items:flex-start;font-size:13px;cursor:pointer}
+.manual input{margin-top:3px;accent-color:var(--ink)}
+.opt{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;justify-content:space-between}
+.exprev{border:1.5px solid var(--ink);background:#fff;max-height:64vh;overflow:auto;min-height:120px}
+.exprev canvas{display:block;width:100%;height:auto}
+.exprev p{padding:20px;color:var(--ink-3);text-align:center}
+
+/* ── 대화상자·알림 ─────────────────── */
+.mo{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:min(540px,calc(100% - 32px));max-height:calc(100% - 32px);overflow:auto;background:var(--paper);border:1.5px solid var(--ink);border-radius:8px;z-index:51;padding:22px;display:flex;flex-direction:column;gap:14px;box-shadow:0 24px 60px rgba(21,22,28,.25)}
+.mo-bg{z-index:50}
+.mo h2{font-size:18px;font-weight:700}
+.mo .sub{color:var(--ink-2);font-size:13.5px}
+.mo-a{display:flex;gap:8px;align-items:center;justify-content:flex-end;margin-top:4px}
+.mo-a a{font-size:13px;color:var(--ink);font-weight:600}
+.rowin{display:flex;gap:6px}
+.rowin .in{flex:1}
+.msg{font-size:12.5px;font-weight:600}
+.msg.ok{color:var(--ok)}.msg.bad{color:var(--bad)}
+#toasts{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);display:flex;flex-direction:column;gap:8px;z-index:60;width:min(560px,calc(100% - 32px));pointer-events:none}
+.toast{pointer-events:auto;display:flex;gap:12px;align-items:flex-start;background:var(--ink);color:#fff;border-radius:6px;padding:11px 12px 11px 14px;font-size:13.5px;line-height:1.45;box-shadow:0 10px 30px rgba(21,22,28,.3);border-left:5px solid var(--blue-soft)}
+.toast.ok{border-left-color:#3DDC97}
+.toast.error{border-left-color:#FF6B81}
+.toast span{flex:1}
+.toast button{background:none;border:0;color:#B9BDCA;padding:0 2px;font-size:16px;line-height:1.2}
+
+/* ── 좁은 화면 ─────────────────────── */
+@media (max-width:1080px){
+  .two,.wt,.ex,.sc-top{grid-template-columns:minmax(0,1fr)}
+  .insp,.sticky{position:static;max-height:none}
+  .cut{grid-template-columns:104px minmax(0,1fr)}
+  .cut-r{grid-column:1/-1;border-left:0;border-top:1px solid var(--line);padding:12px 0 0}
+  .pplsel{flex-direction:row;flex-wrap:wrap}
+}
+@media (max-width:820px){
+  html,body{height:auto}
+  .app{display:block;height:auto}
+  .rail{flex-direction:row;align-items:center;overflow-x:auto;position:sticky;top:0;z-index:30}
+  .brand{padding:10px 12px;flex:none}.brand span{display:none}
+  .steps{flex-direction:row;padding:6px;flex:none}
+  .step{grid-template-columns:30px auto;padding:6px 10px 6px 6px}
+  .step .no{width:30px;height:30px}.step .meta{display:none}.step .nm{grid-row:1/3}
+  .rail-foot{margin:0;padding:6px 10px;flex:none}.conn small{display:none}
+  .work{display:block}
+  .top{padding:0 16px;height:auto;min-height:50px;flex-wrap:wrap;padding-top:6px;padding-bottom:6px}
+  .stage{overflow:visible;padding:20px 16px 32px}
+  .sh h1{font-size:28px}
+  .fg2,.stats{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+  .scale{grid-template-columns:minmax(0,1fr)}
+  .scale button{flex-direction:row;align-items:center}.scale .bar{width:44px;flex:none}
+  .cut{grid-template-columns:minmax(0,1fr)}
+  .cut-l{flex-direction:row;align-items:flex-start}.cut-l .thumb{width:84px}
+  .ln{flex-wrap:wrap}
+}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.001ms!important;transition-duration:.001ms!important}}
+
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="rail" id="rail"></aside>
+  <div class="work">
+    <header class="top" id="top"></header>
+    <main class="stage" id="main"></main>
+  </div>
+</div>
+<div id="drawer"></div>
+<div id="modal"></div>
+<div id="toasts" aria-live="polite"></div>
+<script>
+'use strict';
+/* ═══ 00 · 기본 도구, 상수, 상태 ═══ */
+const $=(s,r=document)=>r.querySelector(s);
+const $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid=(p='x')=>p+Math.random().toString(36).slice(2,9);
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const pad2=n=>String(n).padStart(2,'0');
+/* 받침에 따라 조사 고르기: josa('배경','을/를') → '배경을' */
+function josa(word,pair){const [a,b]=pair.split('/'),ch=String(word).trim().slice(-1),code=ch.charCodeAt(0);const has=code>=0xAC00&&code<=0xD7A3?(code-0xAC00)%28>0:/[0-9]/.test(ch)?/[013678]/.test(ch):false;return word+(has?a:b)}
+const sleep=(ms,signal)=>new Promise((res,rej)=>{
+  if(signal?.aborted)return rej(new DOMException('Aborted','AbortError'));
+  const t=setTimeout(res,ms);
+  signal?.addEventListener('abort',()=>{clearTimeout(t);rej(new DOMException('Aborted','AbortError'))},{once:true});
+});
+function hash(str){let h=2166136261;for(let i=0;i<str.length;i++){h^=str.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0}
+function rng(seed){let s=(seed>>>0)||1;return()=>{s^=s<<13;s>>>=0;s^=s>>>17;s^=s<<5;s>>>=0;return s/4294967296}}
+const getPath=(o,p)=>p.split('.').reduce((a,k)=>a?.[k],o);
+function setPath(o,p,v){const ks=p.split('.');const last=ks.pop();const t=ks.reduce((a,k)=>a[k],o);t[last]=v}
+
+const STEPS=[
+  {id:'brief',no:'01',name:'브리프',desc:'제품과 이야기의 방향, PPL 수위와 작화 옵션을 정합니다.'},
+  {id:'chars',no:'02',name:'캐릭터',desc:'브리프에 맞는 등장인물을 설계하고 캐릭터 시트를 그립니다.'},
+  {id:'bgs',no:'03',name:'배경',desc:'이야기가 벌어질 장소와 제품이 놓일 자리를 정합니다.'},
+  {id:'scenario',no:'04',name:'시나리오',desc:'캐릭터와 배경을 바탕으로 컷 단위 콘티를 쓰고 PPL 노출을 조절합니다.'},
+  {id:'webtoon',no:'05',name:'웹툰',desc:'컷마다 그림을 생성하고 말풍선을 얹어 세로 스크롤 원고를 완성합니다.'},
+  {id:'export',no:'06',name:'검수·내보내기',desc:'광고 표기와 노출 기준을 점검하고 원고를 파일로 저장합니다.'},
+];
+const CATEGORIES=['식음료','뷰티·화장품','패션·잡화','IT·가전','게임·앱','금융·서비스','생활용품','자동차·모빌리티','여행·레저','기타'];
+const GENRES=['로맨스','일상','오피스','코미디','학원','판타지','스릴러','힐링','스포츠','SF'];
+const TONES=['유쾌','설렘','따뜻','감동','긴장','시니컬','잔잔'];
+const PPL_MODES=[
+  {id:'prop',ko:'배경 소품',en:'as a background prop'},
+  {id:'use',ko:'캐릭터가 사용',en:'used by a character'},
+  {id:'talk',ko:'대사로 언급',en:'mentioned once in dialogue'},
+  {id:'key',ko:'사건 해결의 열쇠',en:'as the thing that resolves the conflict'},
+  {id:'hero',ko:'엔딩 제품 샷',en:'a hero product shot near the ending'},
+];
+const STYLES=[
+  {id:'kwebtoon',ko:'한국 웹툰 표준',en:'modern Korean webtoon style, clean digital line art, soft cel shading, vivid but natural colors',sw:['#F2B8A0','#5B7DB1','#2B2E3A']},
+  {id:'romance',ko:'로맨스 순정',en:'Korean romance webtoon style, delicate thin line art, soft pastel gradient shading, luminous eyes, elegant fashion-illustration feel',sw:['#F7C6D0','#C9B6E4','#8A6F9E']},
+  {id:'daily',ko:'일상툰 심플',en:'simple slice-of-life comic style, rounded simplified characters, flat colors, minimal detail, friendly and cute',sw:['#FFE08A','#9AD0C2','#4A4A4A']},
+  {id:'action',ko:'소년 액션',en:'dynamic action manhwa style, bold varied line weight, dramatic lighting, high contrast',sw:['#E4572E','#1F2A44','#F0F0F0']},
+  {id:'water',ko:'수채 감성',en:'soft watercolor illustration style, visible paper texture, gentle color washes, warm natural light',sw:['#BFD8D2','#F3D9B1','#A26769']},
+  {id:'mono',ko:'흑백 스크린톤',en:'black and white manga style, ink line art with screentone shading, no color',sw:['#111111','#888888','#EEEEEE']},
+];
+const RATIOS=[{id:'3:4',ko:'3:4 세로'},{id:'4:5',ko:'4:5 인스타툰'},{id:'1:1',ko:'1:1 정사각'},{id:'9:16',ko:'9:16 풀스크린'},{id:'16:9',ko:'16:9 가로'}];
+const LANGS={ko:'Korean',en:'English',ja:'Japanese'};
+const LANG_KO={ko:'한국어',en:'English',ja:'日本語'};
+const SHOTS=[
+  {id:'wide',ko:'와이드',en:'wide establishing shot, full bodies visible, environment emphasized'},
+  {id:'medium',ko:'미디엄',en:'medium shot, waist-up'},
+  {id:'close',ko:'클로즈업',en:'close-up on the face and upper chest, expressive'},
+  {id:'xclose',ko:'익스트림 클로즈업',en:'extreme close-up on eyes, hands or one detail'},
+  {id:'ots',ko:'오버 더 숄더',en:'over-the-shoulder shot'},
+  {id:'high',ko:'하이 앵글',en:'high-angle shot looking down'},
+  {id:'low',ko:'로우 앵글',en:'low-angle shot looking up'},
+  {id:'insert',ko:'인서트(사물)',en:'insert shot of an object, no faces'},
+];
+/* 컷 단위 노출 단계 (h = 타임라인 막대 높이 %) */
+const PPL=[
+  {ko:'없음',short:'없음',h:0},
+  {ko:'배경 노출',short:'배경',h:30},
+  {ko:'사용 장면',short:'사용',h:55},
+  {ko:'대사 언급',short:'언급',h:78},
+  {ko:'클로즈업',short:'클로즈업',h:100},
+];
+/* 브리프 단위 PPL 수위 1–5 와 권장 노출 컷 비율(%) */
+const INTENSITY=[
+  {ko:'은은하게',d:'배경 소품으로만 보입니다',en:'very subtle — the product only appears as a background prop and is never mentioned'},
+  {ko:'자연스럽게',d:'캐릭터가 한 번 사용합니다',en:'natural — a character uses the product once, without naming it'},
+  {ko:'균형 있게',d:'사용 장면에 대사 한 번',en:'balanced — the product is used and named once in dialogue'},
+  {ko:'적극적으로',d:'이야기 전환의 계기가 됩니다',en:'prominent — the product triggers a turn in the story and gets one hero shot'},
+  {ko:'전면에',d:'제품이 이야기의 중심입니다',en:'front and center — the story revolves around the product, with more than one hero shot'},
+];
+const TARGET=[[10,25],[20,40],[30,50],[40,65],[55,85]];
+const LINE_TYPES=[{id:'say',ko:'대사'},{id:'think',ko:'생각'},{id:'shout',ko:'외침'},{id:'narr',ko:'내레이션'},{id:'sfx',ko:'효과음'}];
+const DISCLOSURES=[{id:'paid',ko:'유료광고 포함'},{id:'support',ko:'제작 지원 문구'},{id:'sponsor',ko:'협찬 표기'},{id:'none',ko:'표기 안 함'}];
+const ROLES=['주인공','상대역','조연','단역'];
+const GENDERS=['여성','남성','기타'];
+const TIMES=['낮','저녁','밤','새벽'];
+const TEXT_MODELS=['gemini-3.8-flash','gemini-4-argon','gemini-3.6-flash','gemini-3.1-pro-preview','gemini-3.5-flash-lite'];
+const IMAGE_MODELS=['gemini-3.1-flash-image','gemini-3-pro-image','gemini-nano-banana-2.1','gemini-3.1-flash-lite-image','gemini-2.5-flash-image'];
+
+const ICON={
+  x:'<svg viewBox="0 0 16 16"><path d="M4 4l8 8M12 4l-8 8"/></svg>',
+  up:'<svg viewBox="0 0 16 16"><path d="M8 13V3M4 7l4-4 4 4"/></svg>',
+  down:'<svg viewBox="0 0 16 16"><path d="M8 3v10M4 9l4 4 4-4"/></svg>',
+  copy:'<svg viewBox="0 0 16 16"><rect x="5.5" y="5.5" width="8" height="8" rx="1"/><path d="M3 10.5V3h7.5"/></svg>',
+  trash:'<svg viewBox="0 0 16 16"><path d="M3 4.5h10M6.5 4.5V3h3v1.5M4.5 4.5l.6 8.5h5.8l.6-8.5"/></svg>',
+  lock:'<svg viewBox="0 0 16 16"><rect x="3.5" y="7" width="9" height="6.5" rx="1"/><path d="M5.5 7V5a2.5 2.5 0 015 0v2"/></svg>',
+  unlock:'<svg viewBox="0 0 16 16"><rect x="3.5" y="7" width="9" height="6.5" rx="1"/><path d="M5.5 7V5a2.5 2.5 0 014.7-1.2"/></svg>',
+  tailL:'<svg viewBox="0 0 16 16"><path d="M3 3h10v7H7.5L4 13v-3H3z"/></svg>',
+  tailR:'<svg viewBox="0 0 16 16"><path d="M13 3H3v7h5.5l3.5 3v-3h1z"/></svg>',
+  tailN:'<svg viewBox="0 0 16 16"><rect x="3" y="4" width="10" height="7.5" rx="3"/></svg>',
+};
+const LOGO='<svg viewBox="0 0 32 32" width="32" height="32" aria-hidden="true"><rect x="2.2" y="2.2" width="27.6" height="27.6" rx="3" fill="none" stroke="#fff" stroke-width="2.4"/><path d="M2.2 19h13.3v10.8" fill="none" stroke="#fff" stroke-width="2.4"/><rect x="19" y="14.5" width="8" height="12.5" fill="#FFD91A"/></svg>';
+
+/* ── 이미지 보관소: 상태에는 id만 두고 Blob은 여기서 관리 ── */
+const IMG=new Map(); // id → {blob,url,kind:'gen'|'upload'|'demo',ref?}
+function putBlob(blob,kind='gen',id=uid('im')){IMG.set(id,{blob,url:URL.createObjectURL(blob),kind,t:Date.now()});return id}
+function putB64(b64,mime,kind='gen'){const bin=atob(b64);const u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);return putBlob(new Blob([u],{type:mime||'image/png'}),kind)}
+function putSVG(svg,kind='demo'){return putBlob(new Blob([svg],{type:'image/svg+xml'}),kind)}
+const imgURL=id=>IMG.get(id)?.url||'';
+const imgKind=id=>IMG.get(id)?.kind||'';
+const blobToDataURL=blob=>new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(blob)});
+const loadImage=url=>new Promise((res,rej)=>{const im=new Image();im.onload=()=>res(im);im.onerror=()=>rej(new Error('이미지를 읽지 못했습니다.'));im.src=url});
+/* Gemini 참조용: 긴 변 1024px JPEG로 줄여 보냅니다 */
+async function refPart(id){
+  const it=IMG.get(id);if(!it)return null;if(it.ref)return it.ref;
+  const im=await loadImage(it.url);
+  const s=Math.min(1,1024/Math.max(im.naturalWidth||1024,im.naturalHeight||1024));
+  const c=document.createElement('canvas');c.width=Math.max(1,Math.round((im.naturalWidth||1024)*s));c.height=Math.max(1,Math.round((im.naturalHeight||1024)*s));
+  const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);x.drawImage(im,0,0,c.width,c.height);
+  return it.ref={mimeType:'image/jpeg',data:c.toDataURL('image/jpeg',.9).split(',')[1]};
+}
+
+/* ── 상태 ── */
+const S={
+  step:'brief',
+  settings:{apiKey:'',base:'https://generativelanguage.googleapis.com/v1beta',textModel:TEXT_MODELS[0],imageModel:IMAGE_MODELS[0],imageSize:'1K',concurrency:2},
+  models:null, // 연결 확인 후 {text:[],image:[]}
+  project:null,
+  batch:null,
+  dirty:false,
+  ui:{drawer:null,modal:null,selCut:null,req:{char:'',bg:'',scenario:''},rw:{},open:{},keyMsg:null,testing:false,custom:{text:false,image:false}},
+};
+const BUSY=new Map();
+const isDemo=()=>!S.settings.apiKey.trim();
+const markDirty=()=>{S.dirty=true};
+/* 프로젝트 어디에서도 쓰지 않는 오래된 이미지를 메모리에서 비웁니다 (방금 만든 것은 1분간 둡니다) */
+function usedImages(p=S.project){
+  const ids=new Set(p.brief.productImages);
+  for(const e of [...p.characters,...p.backgrounds,...p.scenario.cuts]){if(e.image)ids.add(e.image);(e.variants||[]).forEach(v=>ids.add(v))}
+  return ids;
+}
+function sweepImages(){
+  const used=usedImages(),now=Date.now();
+  for(const [id,it] of IMG)if(!used.has(id)&&now-it.t>60000){URL.revokeObjectURL(it.url);IMG.delete(id)}
+}
+const charById=id=>S.project.characters.find(c=>c.id===id);
+const bgById=id=>S.project.backgrounds.find(b=>b.id===id);
+const cutById=id=>S.project.scenario.cuts.find(c=>c.id===id);
+const styleOf=()=>STYLES.find(s=>s.id===S.project.brief.style)||STYLES[0];
+const styleText=()=>{const note=String(S.project.brief.styleNote||'').trim();return styleOf().en+(note?', '+note:'')};
+const shotOf=id=>SHOTS.find(s=>s.id===id)||SHOTS[1];
+function disclosureText(){
+  const b=S.project.brief;const br=b.brand.trim()||'브랜드';
+  return {paid:'유료광고 포함',support:`이 웹툰은 ${br}의 제작 지원을 받았습니다`,sponsor:`${br} 협찬`,none:''}[b.disclosure]||'';
+}
+
+function blankProject(){
+  return {
+    name:'새 PPL 웹툰',sample:false,
+    brief:{brand:'',product:'',category:CATEGORIES[0],target:'',usp:'',desc:'',must:'',avoid:'',productImages:[],prompt:'',genres:[],tones:[],
+      pplLevel:3,pplModes:['use'],disclosure:'paid',style:'kwebtoon',styleNote:'',cuts:8,ratio:'3:4',lang:'ko',nChars:2,nBgs:2},
+    characters:[],backgrounds:[],
+    scenario:{title:'',logline:'',synopsis:'',cuts:[]},
+    export:{width:1080,gap:40,title:true,end:true,manual:{}},
+  };
+}
+function newChar(o={}){return {id:uid('c'),name:'',role:'조연',age:'',gender:'여성',personality:'',appearance:'',outfit:'',speech:'',pplLink:'',visual:'',image:null,variants:[],locked:false,...o}}
+function newBg(o={}){return {id:uid('b'),name:'',desc:'',time:'낮',mood:'',pplSpot:'',visual:'',image:null,variants:[],locked:false,...o}}
+function newLine(o={}){return {id:uid('l'),who:'',type:'say',text:'',x:50,y:20,w:46,tail:'left',...o}}
+function newCut(o={}){return {id:uid('k'),bg:S.project?.backgrounds[0]?.id||'',chars:[],shot:'medium',action:'',lines:[],ppl:0,pplNote:'',visual:'',image:null,variants:[],promptOverride:'',...o}}
+
+/* 말풍선 자동 배치: 위에서 아래로 좌우 번갈아, 내레이션은 모서리에 */
+function autoLayout(cut){
+  const topNarr=cut.lines.length>0&&cut.lines[0].type==='narr';
+  let k=topNarr?1:0;
+  cut.lines.forEach((ln,i)=>{
+    if(ln.type==='sfx'){ln.x=70;ln.y=60;ln.w=70;ln.tail='none';return}
+    if(ln.type==='narr'){const last=i>0&&i===cut.lines.length-1;ln.x=last?64:35;ln.y=last?91:9;ln.w=60;ln.tail='none';return}
+    ln.x=k%2?70:30;ln.y=clamp(15+k*17,10,84);ln.w=46;ln.tail=k%2?'right':'left';k++;
+  });
+  return cut;
+}
+/* 지워진 캐릭터·배경을 가리키는 참조 정리 */
+function pruneRefs(){
+  const cs=new Set(S.project.characters.map(c=>c.id)),bs=new Set(S.project.backgrounds.map(b=>b.id));
+  for(const cut of S.project.scenario.cuts){
+    cut.chars=cut.chars.filter(id=>cs.has(id));
+    if(!bs.has(cut.bg))cut.bg='';
+    for(const ln of cut.lines)if(ln.who&&!cs.has(ln.who))ln.who='';
+  }
+}
+function pplStats(){
+  const p=S.project,cuts=p.scenario.cuts,n=cuts.length,lv=clamp(p.brief.pplLevel,1,5);
+  const [lo,hi]=TARGET[lv-1];
+  const exp=cuts.filter(c=>c.ppl>0).length;
+  const share=n?Math.round(exp/n*100):0;
+  const first=cuts.findIndex(c=>c.ppl>0);
+  const names=[p.brief.product,p.brief.brand].map(s=>s.trim()).filter(s=>s.length>1);
+  const mentions=cuts.reduce((a,c)=>a+c.lines.filter(l=>names.some(nm=>l.text.includes(nm))).length,0);
+  const hero=cuts.filter(c=>c.ppl===4).length;
+  let run=0,maxRun=0,runEnd=-1;
+  cuts.forEach((c,i)=>{run=c.ppl>0?run+1:0;if(run>maxRun){maxRun=run;runEnd=i}});
+  const state=!n?'none':share<lo?'low':share>hi?'high':'ok';
+  return {n,exp,share,first,mentions,hero,lo,hi,state,maxRun,runEnd,lv};
+}
+function pplHints(){
+  const st=pplStats(),b=S.project.brief,out=[];
+  if(!st.n)return out;
+  if(st.exp===0)out.push('제품이 한 번도 등장하지 않습니다. 노출할 컷을 골라 단계를 올려 주세요.');
+  else if(st.state==='low')out.push(`노출 비율 ${st.share}%가 목표(${st.lo}–${st.hi}%)보다 낮습니다. 사용 장면을 한 컷 더 넣어 보세요.`);
+  else if(st.state==='high')out.push(`노출 비율 ${st.share}%가 목표(${st.lo}–${st.hi}%)보다 높습니다. 일부 컷을 배경 노출로 낮추면 광고 느낌이 줄어듭니다.`);
+  if(st.first===0&&st.lv<5)out.push('첫 컷부터 제품이 보이면 이야기에 몰입하기 전에 광고로 읽힐 수 있습니다.');
+  if(st.maxRun>=3)out.push(`C${pad2(st.runEnd-st.maxRun+2)}–C${pad2(st.runEnd+1)} ${st.maxRun}컷 연속 노출입니다. 가운데 한 컷은 인물의 감정에 집중해도 좋습니다.`);
+  if(st.exp>0&&st.mentions===0&&b.pplModes.includes('talk'))out.push('‘대사로 언급’을 골랐지만 대사에 제품명이 없습니다.');
+  if(st.mentions>2)out.push(`대사에 제품명이 ${st.mentions}번 나옵니다. 한두 번이면 충분합니다.`);
+  return out;
+}
+function briefReady(){
+  const b=S.project.brief;
+  return [['brand','브랜드명'],['product','제품명'],['usp','핵심 메시지'],['prompt','스토리 프롬프트']].map(([k,l])=>({k,l,ok:!!String(b[k]).trim()}));
+}
+/* Gemini에 그대로 전달되는 브리프 원문 */
+function briefBlock(){
+  const b=S.project.brief,lv=clamp(b.pplLevel,1,5),[lo,hi]=TARGET[lv-1];
+  const modes=b.pplModes.map(id=>PPL_MODES.find(m=>m.id===id)?.en).filter(Boolean).join('; ')||'writer\'s choice';
+  return [
+    `Brand: ${b.brand||'-'}`,
+    `Product: ${b.product||'-'} (category: ${b.category})`,
+    `Key message (USP): ${b.usp||'-'}`,
+    `Product appearance: ${b.desc||'-'}`,
+    `Must include: ${b.must||'-'}`,
+    `Must avoid: ${b.avoid||'-'}`,
+    `Story prompt from the client: ${b.prompt||'-'}`,
+    `Genre: ${b.genres.join(', ')||'-'} / Tone: ${b.tones.join(', ')||'-'}`,
+    `Target readers: ${b.target||'-'}`,
+    `PPL intensity: ${lv}/5 (${INTENSITY[lv-1].en}). Product visible in about ${lo}-${hi}% of cuts.`,
+    `Preferred placement: ${modes}`,
+    `Art style: ${styleText()}`,
+    `Episode length: ${b.cuts} cuts, panel aspect ratio ${b.ratio}`,
+    `Output language for all story text: ${LANGS[b.lang]}`,
+  ].join('\n');
+}
+
+/* ═══ 10 · 블루 연필 러프(콘티)와 데모용 채색 러프 — SVG로 그립니다 ═══ */
+const SK={blue:'#3FA2D4',blueL:'#A9D7EC',ink:'#15161C',ppl:'#FFD91A'};
+const n1=v=>+(+v).toFixed(1);
+function ratioWH(r){const [a,b]=String(r).split(':').map(Number);return a>=b?[400,Math.round(400*b/a)]:[Math.round(400*a/b),400]}
+
+function Pen(seed,mode){
+  const r=rng(seed),j=(a=1.4)=>(r()-.5)*2*a;
+  const col=mode==='demo'?SK.ink:SK.blue,sw=mode==='demo'?1.7:1.5;
+  const pt=(x,y,a=.9)=>`${n1(x+j(a))} ${n1(y+j(a))}`;
+  return {
+    r,j,col,sw,
+    line(x1,y1,x2,y2,o={}){
+      return `<path d="M${pt(x1,y1,.7)}Q${pt((x1+x2)/2,(y1+y2)/2,1.6)} ${pt(x2,y2,.7)}" fill="none" stroke="${o.c||col}" stroke-width="${o.w||sw}" stroke-linecap="round"/>`;
+    },
+    ell(cx,cy,rx,ry,o={}){
+      const k=.5523;
+      const d=`M${pt(cx-rx,cy)}C${pt(cx-rx,cy-ry*k)} ${pt(cx-rx*k,cy-ry)} ${pt(cx,cy-ry)}C${pt(cx+rx*k,cy-ry)} ${pt(cx+rx,cy-ry*k)} ${pt(cx+rx,cy)}C${pt(cx+rx,cy+ry*k)} ${pt(cx+rx*k,cy+ry)} ${pt(cx,cy+ry)}C${pt(cx-rx*k,cy+ry)} ${pt(cx-rx,cy+ry*k)} ${n1(cx-rx)} ${n1(cy)}Z`;
+      return `<path d="${d}" fill="${o.fill||'none'}" stroke="${o.c||col}" stroke-width="${o.w||sw}" stroke-linejoin="round"/>`;
+    },
+    poly(pts,o={}){
+      const d='M'+pts.map(([x,y])=>pt(x,y)).join('L')+(o.open?'':'Z');
+      return `<path d="${d}" fill="${o.fill||'none'}" stroke="${o.c||col}" stroke-width="${o.w||sw}" stroke-linejoin="round" stroke-linecap="round"/>`;
+    },
+  };
+}
+
+/* 캐릭터 설정 글에서 러프용 생김새를 뽑습니다 */
+function lookOf(c){
+  const t=`${c.appearance||''} ${c.visual||''}`.toLowerCase(),o=`${c.outfit||''} ${c.visual||''}`.toLowerCase(),h=hash((c.id||'')+(c.name||''));
+  const hair=/단발|bob/.test(t)?'bob':/긴 머리|긴머리|장발|long hair|웨이브|긴 생머리/.test(t)?'long':/묶|포니|bun|ponytail|올림머리/.test(t)?'tied':/짧|short|숏컷|커트/.test(t)?'short':(c.gender==='남성'?'short':['bob','long','tied'][h%3]);
+  const hairC=/갈색|brown|브라운|밤색/.test(t)?'#6B4630':/금발|blond/.test(t)?'#D9B25F':/붉은|빨간|red hair|적갈/.test(t)?'#A8432F':/회색|은발|gray|grey|silver|백발/.test(t)?'#8D93A1':/검|black|흑발/.test(t)?'#22232B':['#22232B','#6B4630','#3A2E2A'][h%3];
+  const tops=[[/베이지|beige|아이보리|크림/,'#D8C3A5'],[/네이비|남색|navy/,'#34466E'],[/흰|화이트|white/,'#F2F2EE'],[/검정|검은|블랙|black/,'#2B2E3A'],[/빨강|빨간|레드|red/,'#C8443C'],[/파랑|파란|블루|blue|하늘색/,'#3F74C4'],[/초록|녹색|그린|green|카키/,'#3F7F6B'],[/분홍|핑크|pink/,'#E79AAE'],[/회색|그레이|gray|grey/,'#9AA0AB'],[/보라|퍼플|purple/,'#7A5EA8'],[/주황|오렌지|orange/,'#E0813A']];
+  const hit=tops.find(([re])=>re.test(o));
+  const pool=['#D8C3A5','#34466E','#B5546A','#3F7F6B','#7A5EA8','#C8D3DD','#E0813A'];
+  return {hair,hairC,skin:['#F6D7BF','#EFC6A6','#F9E0CC'][h%3],topC:hit?hit[1]:pool[(h>>>3)%pool.length],botC:['#2B2E3A','#5B6275','#8B7355','#1F2A44'][(h>>>6)%4],wide:c.gender==='남성'};
+}
+
+function can(pen,mode,x,y,w,h){
+  const demo=mode==='demo';let s='';
+  if(!demo)s+=`<rect x="${n1(x-w*.4)}" y="${n1(y-h*.14)}" width="${n1(w*1.8)}" height="${n1(h*1.28)}" fill="${SK.ppl}" opacity=".75" transform="rotate(-4 ${n1(x+w/2)} ${n1(y+h/2)})"/>`;
+  s+=`<rect x="${n1(x)}" y="${n1(y)}" width="${n1(w)}" height="${n1(h)}" rx="${n1(w*.2)}" fill="${demo?SK.ppl:'none'}" stroke="${pen.col}" stroke-width="${pen.sw}"/>`;
+  s+=`<rect x="${n1(x)}" y="${n1(y+h*.34)}" width="${n1(w)}" height="${n1(h*.3)}" fill="${demo?'#fff':'none'}" stroke="${pen.col}" stroke-width="${n1(pen.sw*.8)}"/>`;
+  return s;
+}
+
+/* 7등신 구조 인물. o:{cx,top,h,look,hold} */
+function figure(pen,mode,o){
+  const {cx,top,h,look}=o,demo=mode==='demo',F=c=>demo?c:'none',col=pen.col;
+  const u=h/7,hr=u*.5,ry=hr*1.15,hy=top+ry;
+  const sh=top+u*1.42,sw=u*(look.wide?1.02:.86),hip=top+u*3.7,foot=top+u*7;
+  const P=a=>a.map(p=>`${n1(p[0])} ${n1(p[1])}`);
+  let s='';
+  const capL=cx-hr*1.12,capR=cx+hr*1.12,capT=hy-ry*1.3;
+  const hp=d=>`<path d="${d}" fill="${F(look.hairC)}" stroke="${col}" stroke-width="${pen.sw}" stroke-linejoin="round"/>`;
+  if(look.hair==='long')s+=hp(`M${n1(capL)} ${n1(hy)}C${n1(capL-hr*.25)} ${n1(hy+ry*1.6)} ${n1(capL)} ${n1(hy+ry*2.6)} ${n1(cx-hr*.9)} ${n1(hy+ry*2.9)}L${n1(cx+hr*.9)} ${n1(hy+ry*2.9)}C${n1(capR)} ${n1(hy+ry*2.6)} ${n1(capR+hr*.25)} ${n1(hy+ry*1.6)} ${n1(capR)} ${n1(hy)}Z`);
+  if(look.hair==='bob')s+=hp(`M${n1(capL)} ${n1(hy-ry*.2)}C${n1(capL-hr*.2)} ${n1(hy+ry*.8)} ${n1(capL+hr*.1)} ${n1(hy+ry*1.3)} ${n1(cx-hr*.7)} ${n1(hy+ry*1.34)}L${n1(cx+hr*.7)} ${n1(hy+ry*1.34)}C${n1(capR-hr*.1)} ${n1(hy+ry*1.3)} ${n1(capR+hr*.2)} ${n1(hy+ry*.8)} ${n1(capR)} ${n1(hy-ry*.2)}Z`);
+  if(look.hair==='tied')s+=pen.ell(cx+hr*.8,capT+ry*.15,hr*.42,hr*.42,{fill:F(look.hairC)});
+  // 다리
+  s+=pen.poly([[cx-sw*.72,hip-u*.15],[cx-sw*.56,foot],[cx-sw*.08,foot],[cx,hip+u*.55],[cx+sw*.08,foot],[cx+sw*.56,foot],[cx+sw*.72,hip-u*.15]],{fill:F(look.botC)});
+  const arm=pts=>{
+    const d='M'+P(pts).join('L');
+    return demo
+      ?`<path d="${d}" fill="none" stroke="${SK.ink}" stroke-width="${n1(u*.34+3.2)}" stroke-linecap="round" stroke-linejoin="round"/><path d="${d}" fill="none" stroke="${look.topC}" stroke-width="${n1(u*.34)}" stroke-linecap="round" stroke-linejoin="round"/>`
+      :`<path d="${d}" fill="none" stroke="${col}" stroke-width="${pen.sw}" stroke-linecap="round" stroke-linejoin="round"/>`;
+  };
+  const hand=p=>pen.ell(p[0],p[1],u*.17,u*.17,{fill:F(look.skin)});
+  const la=[[cx-sw*.95,sh+u*.14],[cx-sw*1.2,sh+u*1.25],[cx-sw*1.08,sh+u*2.25]];
+  s+=arm(la)+hand(la[2]);
+  // 목 → 몸통
+  s+=demo?`<rect x="${n1(cx-hr*.32)}" y="${n1(hy+ry*.7)}" width="${n1(hr*.64)}" height="${n1(sh-(hy+ry*.7))}" fill="${look.skin}" stroke="${SK.ink}" stroke-width="1.5"/>`
+        :pen.line(cx-hr*.3,hy+ry*.92,cx-hr*.3,sh-u*.1)+pen.line(cx+hr*.3,hy+ry*.92,cx+hr*.3,sh-u*.1);
+  s+=pen.poly([[cx-sw,sh],[cx-sw*.32,sh-u*.14],[cx+sw*.32,sh-u*.14],[cx+sw,sh],[cx+sw*.74,hip],[cx-sw*.74,hip]],{fill:F(look.topC)});
+  const ra=o.hold?[[cx+sw*.95,sh+u*.14],[cx+sw*1.24,sh+u*1.12],[cx+sw*.7,sh+u*.42]]:[[cx+sw*.95,sh+u*.14],[cx+sw*1.2,sh+u*1.25],[cx+sw*1.08,sh+u*2.25]];
+  s+=arm(ra);
+  if(o.hold)s+=can(pen,mode,ra[2][0]-u*.2,ra[2][1]-u*.66,u*.4,u*.72);
+  s+=hand(ra[2]);
+  // 머리, 앞머리, 얼굴
+  s+=pen.ell(cx,hy,hr,ry,{fill:F(look.skin)});
+  s+=hp(`M${n1(capL)} ${n1(hy+ry*.05)}C${n1(capL)} ${n1(capT-ry*.1)} ${n1(capR)} ${n1(capT-ry*.1)} ${n1(capR)} ${n1(hy+ry*.05)}C${n1(cx+hr*.6)} ${n1(hy-ry*.8)} ${n1(cx-hr*.1)} ${n1(hy-ry*.5)} ${n1(cx-hr*.55)} ${n1(hy-ry*.36)}C${n1(cx-hr*.8)} ${n1(hy-ry*.3)} ${n1(capL+hr*.1)} ${n1(hy-ry*.2)} ${n1(capL)} ${n1(hy+ry*.05)}Z`);
+  if(demo){
+    s+=`<ellipse cx="${n1(cx-hr*.38)}" cy="${n1(hy+ry*.14)}" rx="${n1(hr*.09)}" ry="${n1(hr*.15)}" fill="${SK.ink}"/><ellipse cx="${n1(cx+hr*.38)}" cy="${n1(hy+ry*.14)}" rx="${n1(hr*.09)}" ry="${n1(hr*.15)}" fill="${SK.ink}"/>`;
+    s+=`<path d="M${n1(cx-hr*.2)} ${n1(hy+ry*.56)}Q${n1(cx)} ${n1(hy+ry*.7)} ${n1(cx+hr*.2)} ${n1(hy+ry*.56)}" fill="none" stroke="${SK.ink}" stroke-width="1.5" stroke-linecap="round"/>`;
+  }else{
+    s+=pen.line(cx,hy-ry*.95,cx,hy+ry*.95,{c:SK.blueL,w:1})+pen.line(cx-hr*.95,hy+ry*.12,cx+hr*.95,hy+ry*.12,{c:SK.blueL,w:1});
+  }
+  return s;
+}
+
+/* 배경: 소실점 격자 + 장소 유형별 구조물 */
+function bgLayer(pen,mode,w,h,bg,soft){
+  const demo=mode==='demo',t=bg?.time||'낮';
+  const PAL={
+    '낮':{sky:'#CFE9F7',wall:'#F4EFE4',floor:'#E3D9C6',obj:'#C9B79C',glow:'#FFF2C2',glass:'#E3F1F7',green:'#9CC5A1'},
+    '저녁':{sky:'#FFCFA3',wall:'#F7E2D0',floor:'#E0BFA5',obj:'#C99A7A',glow:'#FFE3B0',glass:'#FFE9D2',green:'#A9B48A'},
+    '밤':{sky:'#1F2A52',wall:'#39446E',floor:'#272E4E',obj:'#4C5887',glow:'#F9DC7A',glass:'#F7E7A6',green:'#3E5C63'},
+    '새벽':{sky:'#BFCBEF',wall:'#DCE2F4',floor:'#BEC7E1',obj:'#9AA6CC',glow:'#FDF1CF',glass:'#E8EDFA',green:'#8FB3A8'},
+  };
+  const P=PAL[t]||PAL['낮'];
+  const key=`${bg?.name||''} ${bg?.desc||''} ${bg?.visual||''}`.toLowerCase();
+  const o={c:demo?SK.ink:(soft?SK.blueL:SK.blue),w:demo?1.4:1.2};
+  const F=x=>demo?x:'none';
+  const hz=h*.62,fl=h-hz;let s='';
+  const box=(x,y,bw,bh,fill)=>pen.poly([[x,y],[x+bw,y],[x+bw,y+bh],[x,y+bh]],{...o,fill:F(fill)});
+  const type=/사무실|오피스|회의|office|desk|작업실|스튜디오|교실|학교|도서관/.test(key)?'office'
+    :/편의점|가게|카페|매장|상점|store|shop|cafe|식당|마트|베이커리|서점|약국/.test(key)?'store'
+    :/거리|길|골목|street|역|승강장|정류장|도시|city|횡단보도|platform/.test(key)?'street'
+    :/공원|옥상|정원|바다|해변|산|숲|야외|캠핑|park|garden|beach|강변|한강|rooftop/.test(key)?'outdoor':'room';
+  const outside=type!=='office'&&type!=='room';
+  if(demo)s+=`<rect width="${w}" height="${n1(hz)}" fill="${outside?P.sky:P.wall}"/><rect y="${n1(hz)}" width="${w}" height="${n1(fl)}" fill="${P.floor}"/>`;
+  const vx=w*(.4+pen.r()*.2);
+  for(let i=0;i<5;i++)s+=pen.line(vx,hz,w*(-.3+i*.4),h,{c:demo?'rgba(21,22,28,.16)':SK.blueL,w:1});
+  s+=pen.line(0,hz,w,hz,o);
+  if(outside){
+    if(t==='저녁')s+=pen.ell(w*.82,hz-h*.05,h*.055,h*.055,{...o,fill:F(P.glow)});
+    else s+=pen.ell(w*.85,h*.11,h*.045,h*.045,{...o,fill:F(P.glow)});
+    if(t==='밤')for(let i=0;i<4;i++){const sx=w*(.1+pen.r()*.6),sy=h*(.05+pen.r()*.2);s+=`<path d="M${n1(sx-3)} ${n1(sy)}h6M${n1(sx)} ${n1(sy-3)}v6" stroke="${demo?P.glow:o.c}" stroke-width="1" stroke-linecap="round"/>`}
+  }
+  if(type==='office'){
+    for(let i=0;i<3;i++)s+=box(w*(.07+i*.3),hz*.14,w*.25,hz*.52,P.sky);
+    const dt=hz+fl*.3;
+    s+=box(w*.2,dt-h*.15,w*.19,h*.105,t==='밤'?P.glow:P.glass)+pen.line(w*.295,dt-h*.045,w*.295,dt,o);
+    s+=box(w*.05,dt,w*.52,fl*.14,P.obj)+pen.line(w*.09,dt+fl*.14,w*.09,h,o)+pen.line(w*.53,dt+fl*.14,w*.53,h,o);
+  }else if(type==='store'){
+    s+=box(w*.07,hz*.3,w*.86,hz*.7,P.glass)+box(w*.07,hz*.1,w*.86,hz*.18,P.obj);
+    s+=box(w*.42,hz*.44,w*.16,hz*.56,demo?'#fff':'none');
+    for(let i=0;i<3;i++)s+=pen.line(w*.11,hz*(.5+i*.16),w*.37,hz*(.5+i*.16),o);
+    s+=box(w*.64,hz*.44,w*.23,hz*.56,demo?'#fff':'none')+pen.line(w*.755,hz*.44,w*.755,hz,o);
+    const py=hz+fl*.12;
+    s+=pen.poly([[w*.63,py+fl*.2],[w*.95,py+fl*.2],[w*.79,py]],{...o,fill:F('#E8EEF2')})+pen.line(w*.79,py+fl*.2,w*.79,py+fl*.72,o)+pen.line(w*.69,py+fl*.5,w*.89,py+fl*.5,o);
+  }else if(type==='street'){
+    for(let i=0;i<4;i++){
+      const bh=hz*(.4+pen.r()*.5),bx=w*(.02+i*.25);
+      s+=box(bx,hz-bh,w*.2,bh,P.obj)+box(bx+w*.04,hz-bh*.8,w*.045,bh*.16,P.glass)+box(bx+w*.115,hz-bh*.8,w*.045,bh*.16,P.glass);
+    }
+    s+=pen.line(w*.92,hz-h*.34,w*.92,hz+fl*.5,o)+pen.ell(w*.92,hz-h*.36,h*.02,h*.02,{...o,fill:F(P.glow)});
+  }else if(type==='outdoor'){
+    s+=`<path d="M0 ${n1(hz)}Q${n1(w*.3)} ${n1(hz-h*.14)} ${n1(w*.6)} ${n1(hz-h*.04)}T${w} ${n1(hz-h*.08)}" fill="none" stroke="${o.c}" stroke-width="${o.w}"/>`;
+    for(let i=0;i<3;i++){const tx=w*(.14+i*.31),th=h*(.2+pen.r()*.08);s+=pen.line(tx,hz+fl*.1,tx,hz-th*.4,o)+pen.ell(tx,hz-th,h*.085,h*.1,{...o,fill:F(P.green)})}
+    s+=box(w*.56,hz+fl*.3,w*.3,fl*.1,P.obj);
+  }else{
+    s+=box(w*.56,hz*.16,w*.32,hz*.48,P.sky)+pen.line(w*.72,hz*.16,w*.72,hz*.64,o)+pen.line(w*.56,hz*.4,w*.88,hz*.4,o);
+    s+=box(w*.07,hz-h*.03,w*.4,h*.15,P.obj)+box(w*.07,hz-h*.11,w*.4,h*.08,P.obj);
+    s+=box(w*.56,hz+fl*.34,w*.32,fl*.13,P.obj);
+  }
+  return s;
+}
+
+function svgWrap(w,h,inner,mode,label){
+  const demo=mode==='demo';
+  const frame=demo?'':`<rect x="6" y="6" width="${w-12}" height="${h-12}" fill="none" stroke="${SK.blueL}" stroke-width=".8" stroke-dasharray="3 3"/>`;
+  const stamp=demo?`<text x="${w/2}" y="${n1(h/2+w*.06)}" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-weight="700" font-size="${n1(w*.19)}" fill="#15161C" opacity=".12" transform="rotate(-18 ${w/2} ${h/2})">DEMO</text>`:'';
+  const cap=label?`<text x="10" y="${h-10}" font-family="monospace" font-size="9" fill="${demo?SK.ink:SK.blue}" opacity=".85">${esc(label)}</text>`:'';
+  return `<svg class="sk" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${h}" width="${w*2}" height="${h*2}" preserveAspectRatio="xMidYMid slice"><rect width="${w}" height="${h}" fill="#fff"/>${inner}${frame}${stamp}${cap}</svg>`;
+}
+
+function charSVG(c,mode='rough',salt=''){
+  const w=300,h=400,pen=Pen(hash(c.id+salt+mode),mode);let s='';
+  if(mode==='demo')s+=`<rect width="${w}" height="${h}" fill="#F3F4F1"/>`;
+  const top=h*.09,fh=h*.8,u=fh/7;
+  if(mode!=='demo'){ // 등신 가이드
+    for(let i=0;i<=7;i++)s+=`<path d="M22 ${n1(top+u*i)}h${i%7?8:14}" stroke="${SK.blueL}" stroke-width="1"/>`+(i<7?`<text x="14" y="${n1(top+u*i+u*.6)}" font-family="monospace" font-size="8" fill="${SK.blueL}" text-anchor="middle">${i+1}</text>`:'');
+    s+=`<path d="M26 ${n1(top)}v${n1(fh)}" stroke="${SK.blueL}" stroke-width="1"/>`;
+  }
+  s+=pen.line(w*.2,top+fh+2,w*.8,top+fh+2,{c:mode==='demo'?'rgba(21,22,28,.3)':SK.blueL});
+  s+=figure(pen,mode,{cx:w*.52,top,h:fh,look:lookOf(c)});
+  return svgWrap(w,h,s,mode,mode==='demo'?'DEMO SHEET':'ROUGH · 7 HEADS');
+}
+function bgSVG(b,mode='rough',salt=''){
+  const w=400,h=225,pen=Pen(hash(b.id+salt+mode),mode);
+  let s=bgLayer(pen,mode,w,h,b,false);
+  if(String(b.pplSpot||'').trim()){
+    const x=w*.6,y=h*.7;
+    s+=`<rect x="${x}" y="${y}" width="68" height="24" fill="${SK.ppl}" opacity="${mode==='demo'?'.95':'.75'}" transform="rotate(-3 ${x+34} ${y+12})"/><text x="${x+34}" y="${y+16}" text-anchor="middle" font-family="monospace" font-weight="700" font-size="10" fill="${SK.ink}">PPL 자리</text>`;
+  }
+  return svgWrap(w,h,s,mode,mode==='demo'?'DEMO BG':'ROUGH · 1-POINT');
+}
+function cutSVG(cut,mode='rough',salt=''){
+  const [w,h]=ratioWH(S.project.brief.ratio),pen=Pen(hash(cut.id+salt+mode),mode);
+  const bg=bgById(cut.bg);
+  let s=bgLayer(Pen(hash((bg?.id||'nobg')+mode),mode),mode,w,h,bg,true);
+  const chars=cut.chars.map(charById).filter(Boolean).slice(0,3);
+  const conf={wide:{fh:.6,top:.32},medium:{fh:1.55,top:.2},close:{fh:3.0,top:.17},xclose:{fh:4.6,top:.04},ots:{fh:1.9,top:.2},high:{fh:.8,top:.26},low:{fh:1.3,top:.14}}[cut.shot];
+  const n=chars.length;
+  if(conf&&n){
+    const k=n>1&&cut.shot!=='wide'&&cut.shot!=='high'?.8:1;
+    chars.forEach((c,i)=>{
+      const cx=w*(n===1?.5:n===2?[.31,.69][i]:[.2,.5,.8][i]);
+      s+=figure(pen,mode,{cx,top:h*conf.top,h:h*conf.fh*k,look:lookOf(c),hold:i===0&&(cut.ppl===2||cut.ppl===3)});
+    });
+  }
+  const noHolder=!(conf&&n);
+  if(cut.ppl===1||((cut.ppl===2||cut.ppl===3)&&noHolder))s+=can(pen,mode,w*.8,h*.6,w*.07,w*.12);
+  if(cut.ppl===4||(cut.shot==='insert'&&cut.ppl>0))s+=can(pen,mode,w*.6,h*.5,w*.24,w*.42);
+  const i=S.project.scenario.cuts.indexOf(cut);
+  return svgWrap(w,h,s,mode,`${mode==='demo'?'DEMO':'ROUGH'} · C${pad2(i+1)} ${shotOf(cut.shot).ko}`);
+}
+const svgDataURL=svg=>'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
+
+/* ═══ 20 · Gemini 연동, 프롬프트 조립, 데모 생성기 ═══ */
+class ApiError extends Error{constructor(status,message,kind){super(message);this.status=status;this.kind=kind||'http'}}
+const modelPath=m=>String(m).trim().replace(/^models\//,'');
+const apiBase=()=>S.settings.base.trim().replace(/\/+$/,'');
+
+async function apiFetch(path,init={},signal){
+  const headers={'x-goog-api-key':S.settings.apiKey.trim(),...(init.body?{'Content-Type':'application/json'}:{})};
+  for(let attempt=0;;attempt++){
+    let res;
+    try{res=await fetch(apiBase()+path,{...init,headers,signal})}
+    catch(e){if(e.name==='AbortError')throw e;throw new ApiError(0,e.message,'network')}
+    if(res.ok)return res.json();
+    const j=await res.json().catch(()=>null);
+    const msg=j?.error?.message||res.statusText||`HTTP ${res.status}`;
+    if((res.status===429||res.status>=500)&&attempt<2){await sleep(1600*(attempt+1)**2,signal);continue}
+    throw new ApiError(res.status,msg);
+  }
+}
+const generate=(model,body,signal)=>apiFetch(`/models/${modelPath(model)}:generateContent`,{method:'POST',body:JSON.stringify(body)},signal);
+
+function explain(e){
+  if(e?.kind==='network')return 'Gemini 서버에 연결하지 못했습니다. 네트워크를 확인해 주세요. 채팅 안 미리보기 창에서는 외부 API 호출이 막혀 있으니, 파일을 내려받아 Chrome 같은 브라우저에서 직접 열어야 합니다.';
+  if(e?.kind==='blocked')return `안전 정책으로 생성이 막혔습니다 (${e.message}). 표현을 바꿔 다시 시도해 주세요.`;
+  if(e?.kind==='empty')return e.message;
+  const s=e?.status,m=e?.message||'';
+  if(s===400&&/api key/i.test(m))return 'API 키가 올바르지 않습니다. Gemini 연결 설정에서 키를 다시 확인해 주세요.';
+  if(s===401||s===403)return `이 키로는 요청이 거부되었습니다. 키 권한이나 결제 설정을 확인해 주세요. (${m})`;
+  if(s===404)return `모델을 찾을 수 없습니다. Gemini 연결 설정에서 ‘연결 확인’을 눌러 사용할 수 있는 모델을 골라 주세요. (${m})`;
+  if(s===429)return '요청 한도를 넘었습니다. 잠시 뒤 다시 시도하거나 동시 생성 수를 줄여 주세요.';
+  if(s>=500)return 'Gemini 서버가 일시적으로 응답하지 않습니다. 잠시 뒤 다시 시도해 주세요.';
+  return m||'알 수 없는 오류가 발생했습니다.';
+}
+const isFatal=e=>e?.kind==='network'||[401,403,404].includes(e?.status)||(e?.status===400&&/api key/i.test(e?.message||''));
+
+function candidateParts(data){
+  const br=data?.promptFeedback?.blockReason;
+  if(br)throw new ApiError(0,br,'blocked');
+  const c=data?.candidates?.[0];
+  return {parts:(c?.content?.parts||[]).filter(p=>!p.thought),finish:c?.finishReason||''};
+}
+function parseJSON(text){
+  let t=String(text).trim().replace(/^```(?:json)?\s*/i,'').replace(/```\s*$/,'');
+  try{return JSON.parse(t)}catch(_){}
+  const a=t.indexOf('{'),b=t.lastIndexOf('}');
+  if(a>=0&&b>a){try{return JSON.parse(t.slice(a,b+1))}catch(_){}}
+  throw new ApiError(0,'모델이 형식에 맞지 않는 답을 보냈습니다. 다시 시도해 주세요.','empty');
+}
+/* 텍스트 → JSON. 스키마를 거부하는 모델이면 스키마 없이 한 번 더 */
+async function genJSON({system,prompt,schema,signal}){
+  const body=withSchema=>({
+    systemInstruction:{parts:[{text:system}]},
+    contents:[{role:'user',parts:[{text:prompt}]}],
+    generationConfig:{responseMimeType:'application/json',...(withSchema?{responseSchema:schema}:{})},
+  });
+  let data;
+  try{data=await generate(S.settings.textModel,body(true),signal)}
+  catch(e){if(e.status===400&&!/api key/i.test(e.message))data=await generate(S.settings.textModel,body(false),signal);else throw e}
+  const {parts,finish}=candidateParts(data);
+  const text=parts.map(p=>p.text||'').join('');
+  if(!text.trim())throw new ApiError(0,`모델이 빈 답을 보냈습니다${finish?` (${finish})`:''}. 다시 시도해 주세요.`,'empty');
+  return parseJSON(text);
+}
+/* 이미지 생성. 화면비 설정 필드는 모델 세대마다 달라서 400이면 다음 형식으로 넘어갑니다 */
+const IMG_VARIANT={};
+async function genImage({prompt,refs=[],ratio,signal}){
+  const model=S.settings.imageModel,size=S.settings.imageSize;
+  const parts=[];
+  refs.forEach((r,i)=>{parts.push({text:`Image ${i+1}: ${r.label}`});parts.push({inlineData:r.data})});
+  parts.push({text:prompt});
+  const variants=[
+    g=>{g.imageConfig={aspectRatio:ratio,imageSize:size}},
+    g=>{g.imageConfig={aspectRatio:ratio}},
+    g=>{g.responseFormat={image:{aspectRatio:ratio,imageSize:size}}},
+    ()=>{},
+  ];
+  const vk=model+'|'+size;
+  for(let i=IMG_VARIANT[vk]??0;i<variants.length;i++){
+    const gc={responseModalities:['TEXT','IMAGE']};variants[i](gc);
+    let data;
+    try{data=await generate(model,{contents:[{role:'user',parts}],generationConfig:gc},signal)}
+    catch(e){if(e.status===400&&!/api key/i.test(e.message)&&i<variants.length-1)continue;throw e}
+    IMG_VARIANT[vk]=i;
+    const {parts:out,finish}=candidateParts(data);
+    const im=out.map(p=>p.inlineData||p.inline_data).find(Boolean);
+    if(!im?.data){
+      const said=out.map(p=>p.text||'').join(' ').trim().slice(0,140);
+      if(/SAFETY|PROHIBITED|BLOCK/i.test(finish))throw new ApiError(0,finish,'blocked');
+      throw new ApiError(0,`이미지가 돌아오지 않았습니다${finish?` (${finish})`:''}.${said?` 모델의 답: ${said}`:''}`,'empty');
+    }
+    return putB64(im.data,im.mimeType||im.mime_type||'image/png','gen');
+  }
+}
+async function listModels(signal){
+  const data=await apiFetch('/models?pageSize=200',{},signal);
+  const all=(data.models||[]).filter(m=>(m.supportedGenerationMethods||[]).includes('generateContent')).map(m=>modelPath(m.name));
+  const image=all.filter(n=>/image|banana/i.test(n));
+  const text=all.filter(n=>!/image|banana|tts|audio|live|embedding|veo|lyria|robotics|computer-use|research|aqa|omni/i.test(n));
+  return {text,image,total:all.length};
+}
+
+/* ── 스키마 ── */
+const str={type:'STRING'},int={type:'INTEGER'};
+const obj=(props,required=Object.keys(props))=>({type:'OBJECT',properties:props,required});
+const arr=items=>({type:'ARRAY',items});
+const CHAR_SCHEMA=obj({characters:arr(obj({name:str,role:str,age:str,gender:str,personality:str,appearance:str,outfit:str,speech:str,pplLink:str,visual:str}))});
+const BG_SCHEMA=obj({backgrounds:arr(obj({name:str,desc:str,time:str,mood:str,pplSpot:str,visual:str}))});
+const CUT_ITEM=obj({bg:str,chars:arr(str),shot:str,action:str,lines:arr(obj({who:str,type:str,text:str})),sfx:str,pplLevel:int,pplNote:str,visual:str});
+const SCENARIO_SCHEMA=obj({title:str,logline:str,synopsis:str,cuts:arr(CUT_ITEM)});
+
+const SYS_DESIGN='You are a lead designer and producer for Korean webtoons who specializes in branded content (PPL). You design things that belong to the story first and give the product a believable place second. Respond with JSON only.';
+const SYS_WRITER='You are the head writer for short-form branded webtoons in the Korean vertical-scroll format. You write tight, emotionally clear episodes where product placement feels earned, never like ad copy. Respond with JSON only.';
+
+function designPrompt(kind,n,keep){
+  const b=S.project.brief,lang=LANGS[b.lang],req=S.ui.req[kind].trim();
+  if(kind==='char')return `[BRIEF]\n${briefBlock()}\n\n[CHARACTERS ALREADY FIXED — design around them, do not repeat]\n${keep.map(c=>`- ${c.name} (${c.role}): ${c.personality}`).join('\n')||'- none'}\n\n[EXTRA REQUEST]\n${req||'-'}\n\nDesign exactly ${n} new character(s) for this short branded webtoon episode.\nField rules:\n- name: a natural ${lang} name. role: one of 주인공, 상대역, 조연. age: a number as text. gender: one of 여성, 남성, 기타.\n- personality, appearance, outfit, speech, pplLink: written in ${lang}, 1-2 concise sentences each. pplLink explains how this character naturally meets or uses the product.\n- visual: ONE English line of comma-separated visual tags for an image model (age, hair, face, build, outfit, one signature item). No names.\nReturn {"characters":[...]}.`;
+  return `[BRIEF]\n${briefBlock()}\n\n[CHARACTERS]\n${S.project.characters.map(c=>`- ${c.name} (${c.role}): ${c.personality}`).join('\n')||'- not designed yet'}\n\n[LOCATIONS ALREADY FIXED — do not repeat]\n${keep.map(x=>`- ${x.name}: ${x.desc}`).join('\n')||'- none'}\n\n[EXTRA REQUEST]\n${req||'-'}\n\nDesign exactly ${n} new location(s) where this episode takes place.\nField rules:\n- name: short place name in ${lang}. desc: 1-2 sentences in ${lang} about what we see.\n- time: one of 낮, 저녁, 밤, 새벽. mood: a few words in ${lang}.\n- pplSpot: in ${lang}, where the product can sit or be used naturally in this place.\n- visual: ONE English line of comma-separated tags for an image model (place type, key props, lighting, camera). No people.\nReturn {"backgrounds":[...]}.`;
+}
+function scenarioPrompt(){
+  const p=S.project,b=p.brief,lang=LANGS[b.lang],lv=clamp(b.pplLevel,1,5),[lo,hi]=TARGET[lv-1];
+  return `[BRIEF]\n${briefBlock()}\n\n[CHARACTERS — refer to them by id]\n${p.characters.map((c,i)=>`- id c${i+1} | ${c.name} | ${c.role}, ${c.age}, ${c.gender} | personality: ${c.personality} | speech: ${c.speech} | product link: ${c.pplLink}`).join('\n')}\n\n[LOCATIONS — refer to them by id]\n${p.backgrounds.map((x,i)=>`- id b${i+1} | ${x.name} | ${x.desc} | time: ${x.time} | product spot: ${x.pplSpot}`).join('\n')}\n\n[EXTRA DIRECTION]\n${S.ui.req.scenario.trim()||'-'}\n\nWrite a complete episode of exactly ${b.cuts} cuts with a clear setup, development, turn and ending.\nPPL rules:\n- Overall intensity ${lv}/5: ${INTENSITY[lv-1].en}. The product should be visible in about ${lo}-${hi}% of the cuts.\n- pplLevel per cut: 0 = not shown, 1 = background prop, 2 = a character uses or holds it, 3 = named in dialogue (use the product name once, naturally), 4 = hero close-up of the product.\n- Do not show the product in the first cut unless intensity is 5. Avoid three or more product cuts in a row. Dialogue must never sound like ad copy.\n- Respect "Must include" and "Must avoid" from the brief.\nCut rules:\n- bg: a location id. chars: ids of the characters visible in the cut (0-3). shot: one of wide, medium, close, xclose, ots, high, low, insert.\n- action: 1-2 sentences in ${lang} describing what the reader sees.\n- lines: 0-3 items. who: a character id, or "" for narration. type: one of say, think, shout, narr. text: in ${lang}, at most 28 characters, in that character's speech style.\n- sfx: short sound-effect lettering in ${lang}, or "".\n- pplNote: in ${lang}, how the product appears in this cut ("" when pplLevel is 0).\n- visual: ONE English sentence for the illustrator: composition, poses, expressions. No dialogue text.\nReturn {"title","logline","synopsis","cuts":[...]} with title, logline and synopsis in ${lang}.`;
+}
+function rewritePrompt(cut,instr){
+  const p=S.project,b=p.brief,lang=LANGS[b.lang],i=p.scenario.cuts.indexOf(cut);
+  const cid=id=>'c'+(p.characters.findIndex(c=>c.id===id)+1),bid=id=>'b'+(p.backgrounds.findIndex(x=>x.id===id)+1);
+  const story=p.scenario.cuts.map((c,k)=>`C${pad2(k+1)} [${bgById(c.bg)?.name||'-'}] ${c.action} ${c.lines.map(l=>`"${l.text}"`).join(' ')} (ppl ${c.ppl})`).join('\n');
+  const cur={bg:bid(cut.bg),chars:cut.chars.map(cid),shot:cut.shot,action:cut.action,lines:cut.lines.filter(l=>l.type!=='sfx').map(l=>({who:l.who?cid(l.who):'',type:l.type,text:l.text})),sfx:cut.lines.find(l=>l.type==='sfx')?.text||'',pplLevel:cut.ppl,pplNote:cut.pplNote,visual:cut.visual};
+  return `[BRIEF]\n${briefBlock()}\n\n[CHARACTERS]\n${p.characters.map((c,k)=>`- id c${k+1} | ${c.name} | ${c.personality} | speech: ${c.speech}`).join('\n')}\n\n[LOCATIONS]\n${p.backgrounds.map((x,k)=>`- id b${k+1} | ${x.name}`).join('\n')}\n\n[EPISODE SO FAR: ${p.scenario.title}]\n${story}\n\n[CUT TO REWRITE: C${pad2(i+1)}]\n${JSON.stringify(cur)}\n\n[INSTRUCTION]\n${instr}\n\nRewrite only this cut so it follows the instruction and still connects to the cuts before and after it. Keep the same JSON shape: bg, chars, shot (wide|medium|close|xclose|ots|high|low|insert), action, lines[{who,type(say|think|shout|narr),text}], sfx, pplLevel (0-4), pplNote, visual (English). Story text in ${lang}, each line at most 28 characters.`;
+}
+
+/* ── 모델 답 → 앱 데이터 ── */
+function normChar(r){
+  return newChar({name:String(r.name||'').trim()||'이름 없음',role:ROLES.includes(r.role)?r.role:'조연',age:String(r.age||'').replace(/[^0-9]/g,'').slice(0,3),gender:GENDERS.includes(r.gender)?r.gender:'기타',
+    personality:r.personality||'',appearance:r.appearance||'',outfit:r.outfit||'',speech:r.speech||'',pplLink:r.pplLink||'',visual:r.visual||''});
+}
+function normBg(r){return newBg({name:String(r.name||'').trim()||'이름 없는 장소',desc:r.desc||'',time:TIMES.includes(r.time)?r.time:'낮',mood:r.mood||'',pplSpot:r.pplSpot||'',visual:r.visual||''})}
+function normCut(r){
+  const p=S.project;
+  const cid=a=>{const m=/^c(\d+)$/i.exec(String(a||'').trim());if(m)return p.characters[+m[1]-1]?.id||'';return p.characters.find(c=>c.name===a)?.id||''};
+  const bid=a=>{const m=/^b(\d+)$/i.exec(String(a||'').trim());if(m)return p.backgrounds[+m[1]-1]?.id||'';return p.backgrounds.find(x=>x.name===a)?.id||''};
+  const types=['say','think','shout','narr'];
+  const lines=(Array.isArray(r.lines)?r.lines:[]).filter(l=>String(l?.text||'').trim()).slice(0,4).map(l=>{
+    const who=cid(l.who);const type=types.includes(l.type)?l.type:(who?'say':'narr');
+    return newLine({who:type==='narr'?'':who,type,text:String(l.text).trim()});
+  });
+  if(String(r.sfx||'').trim())lines.push(newLine({type:'sfx',text:String(r.sfx).trim(),tail:'none'}));
+  const ppl=clamp(Math.round(Number(r.pplLevel)||0),0,4);
+  return autoLayout(newCut({bg:bid(r.bg)||p.backgrounds[0]?.id||'',chars:[...new Set((Array.isArray(r.chars)?r.chars:[]).map(cid).filter(Boolean))].slice(0,3),
+    shot:SHOTS.some(s=>s.id===r.shot)?r.shot:'medium',action:r.action||'',lines,ppl,pplNote:ppl?String(r.pplNote||''):'',visual:r.visual||''}));
+}
+
+/* ── 이미지 프롬프트 ── */
+function entPrompt(kind,e){
+  const st={en:styleText()};
+  if(kind==='char')return `Character design sheet for a Korean webtoon. ONE character only, full-body standing front view, relaxed neutral pose, entire figure from head to shoes inside the frame.\nArt style: ${st.en}.\nCharacter: ${e.visual||'-'}\nAppearance notes: ${e.appearance||'-'}\nOutfit: ${e.outfit||'-'}\nPersonality to show in the expression: ${e.personality||'-'}\nPlain very light grey background, soft even lighting, clean silhouette.\nNo text, no labels, no logos, no watermark, no extra characters. Aspect ratio 3:4.`;
+  return `Background art for a Korean webtoon. An empty location with NO people.\nArt style: ${st.en}.\nLocation: ${e.name} — ${e.desc||'-'}\nVisual tags: ${e.visual||'-'}\nTime of day: ${e.time}. Mood: ${e.mood||'-'}.\nWide establishing view with clear depth, room in the mid-ground for characters to be added later.\nNo text, no readable signage, no logos, no watermark. Aspect ratio 16:9.`;
+}
+/* 컷 한 장을 그릴 때 넘길 참조 이미지 목록과 프롬프트 */
+function cutPlan(cut){
+  const p=S.project,b=p.brief,st={en:styleText()},refs=[];
+  const real=id=>id&&IMG.has(id)&&imgKind(id)!=='demo';
+  const chars=cut.chars.map(charById).filter(Boolean);
+  const charLines=chars.map(c=>{
+    if(real(c.image)){refs.push({kind:'char',name:c.name,img:c.image,label:`character sheet of "${c.name}" — keep this exact face, hair and outfit`});return `- ${c.name} (see Image ${refs.length}): ${c.visual||c.appearance}`}
+    return `- ${c.name}: ${c.visual||''} ${c.appearance||''} Outfit: ${c.outfit||'-'}`;
+  });
+  const bg=bgById(cut.bg);let bgLine='Location: unspecified, keep it simple.';
+  if(bg){
+    bgLine=`Location: ${bg.name} — ${bg.desc||''} Time: ${bg.time}. Mood: ${bg.mood||'-'}.`;
+    if(real(bg.image)){refs.push({kind:'bg',name:bg.name,img:bg.image,label:`location reference for "${bg.name}"`});bgLine+=` Match the location in Image ${refs.length}, moving the camera to suit the shot.`}
+    else bgLine+=` Visual tags: ${bg.visual||'-'}`;
+  }
+  let ppl='Product placement: none. Do not show any branded product in this panel.';
+  if(cut.ppl>0){
+    const how=[,`The product "${b.product}" appears naturally as a background prop. It is small but recognizable.`,`A character is naturally using or holding the product "${b.product}", label toward the camera.`,`The product "${b.product}" is clearly visible while a character talks about it.`,`Hero close-up: the product "${b.product}" is the visual focus of the panel, label fully legible, attractive lighting.`][cut.ppl];
+    ppl=`Product placement: ${how}${cut.pplNote?` Staging: ${cut.pplNote}.`:''}`;
+    const pid=b.productImages.find(real);
+    if(pid){refs.push({kind:'product',name:b.product,img:pid,label:`PRODUCT reference for "${b.product}"`});ppl+=` Reproduce the product exactly as in Image ${refs.length}: same shape, colors and label.`}
+    else ppl+=` Product appearance: ${b.desc||'-'}.`;
+  }
+  const beat=cut.lines.filter(l=>l.type!=='sfx').map(l=>l.text).join(' / ');
+  const prompt=[
+    'Create ONE finished webtoon panel: a single illustration with no panel borders or gutters.',
+    `Art style: ${st.en}. Keep line weight, coloring and character designs consistent with the reference images.`,
+    `Aspect ratio ${b.ratio}.`,
+    bgLine,
+    `Shot: ${shotOf(cut.shot).en}.`,
+    `Action: ${cut.action||'-'}`,
+    cut.visual?`Direction: ${cut.visual}`:'',
+    chars.length?`Characters in this panel:\n${charLines.join('\n')}`:'No characters in this panel.',
+    beat?`Emotional beat (do NOT draw these words): ${beat}`:'',
+    ppl,
+    `Rules: no speech bubbles, no captions, no sound-effect lettering, no watermark, no text of any kind except what is printed on the product itself. Leave calm, uncluttered space in the upper third so lettering can be added later.${b.avoid.trim()?` Never depict: ${b.avoid.trim()}.`:''}`,
+  ].filter(Boolean).join('\n');
+  return {refs,prompt};
+}
+
+/* ── 데모 생성기: API 키 없이 흐름을 보여 주는 예시 내용 ── */
+function demoChars(){
+  const P=S.project.brief.product||'제품';
+  return [
+    {name:'한서윤',role:'주인공',age:'26',gender:'여성',personality:'일은 꼼꼼하지만 감정이 얼굴에 다 드러나는 신입 디자이너. 피곤하면 혼잣말이 늘어난다.',appearance:'어깨에 닿는 갈색 단발, 둥근 눈, 작은 체구.',outfit:'베이지 니트 가디건, 사원증, 와이드 슬랙스',speech:'혼잣말이 많고, 솔직한 존댓말',pplLink:`야근하는 날이면 꼭 ${josa(P,'을/를')} 찾는 단골. 뚜껑 따는 소리가 퇴근 신호다.`,visual:'26-year-old Korean woman, shoulder-length brown bob hair, round eyes, petite build, beige knit cardigan, employee ID lanyard, wide slacks'},
+    {name:'강도현',role:'상대역',age:'31',gender:'남성',personality:'말수가 적고 무뚝뚝하지만 팀원의 취향을 전부 기억하는 선임 디자이너.',appearance:'키가 크고 검은 짧은 머리, 날카로운 눈매, 얇은 테 안경.',outfit:'소매를 걷은 네이비 셔츠, 검정 슬랙스',speech:'짧고 건조한 존댓말',pplLink:`서윤이 좋아하는 ${josa(P,'을/를')} 기억했다가 말없이 건넨다.`,visual:'31-year-old Korean man, tall, short black hair, sharp eyes, thin-framed glasses, navy shirt with rolled sleeves, black slacks'},
+    {name:'오지후',role:'조연',age:'24',gender:'남성',personality:'눈치가 빠르고 넉살 좋은 편의점 아르바이트생. 단골의 사정을 다 안다.',appearance:'밝은 갈색 짧은 머리, 웃는 상, 마른 체형.',outfit:'초록 편의점 조끼, 흰 티셔츠',speech:'친근한 반존대',pplLink:`${P} 재고가 하나 남으면 단골 몫으로 슬쩍 빼 둔다.`,visual:'24-year-old Korean man, short light-brown hair, friendly smile, slim, green convenience-store vest over white t-shirt'},
+    {name:'민지아',role:'조연',age:'38',gender:'여성',personality:'일에는 엄격하지만 팀원 퇴근 시간은 누구보다 챙기는 팀장.',appearance:'검은 긴 머리를 낮게 묶음, 단정한 인상.',outfit:'회색 재킷, 흰 블라우스',speech:'단정한 존댓말',pplLink:`회의가 길어지면 팀원 자리마다 ${josa(P,'을/를')} 하나씩 올려 둔다.`,visual:'38-year-old Korean woman, long black hair in a low ponytail, composed look, grey blazer, white blouse'},
+  ];
+}
+function demoBgs(){
+  const P=S.project.brief.product||'제품';
+  return [
+    {name:'디자인팀 사무실',desc:'불이 대부분 꺼진 오픈 오피스. 모니터 불빛만 남은 자리 뒤로 도시 야경이 보인다.',time:'밤',mood:'고요하고 조금 쓸쓸한',pplSpot:`모니터 옆, 다 마신 ${josa(P,'이/가')} 놓이는 자리`,visual:'open-plan design office at night, one desk lit by monitor glow, city lights through large windows, wide angle'},
+    {name:'회사 앞 편의점',desc:'24시간 편의점 앞 파라솔 테이블. 간판 불빛이 인도를 따뜻하게 비춘다.',time:'밤',mood:'따뜻하고 설레는',pplSpot:'음료 냉장고 진열대와 파라솔 테이블 위',visual:'Korean convenience store exterior at night, warm light on the sidewalk, parasol table with plastic chairs, drink fridge visible through glass'},
+    {name:'회사 옥상 정원',desc:'화분과 벤치가 놓인 작은 옥상. 난간 너머로 저녁노을이 번진다.',time:'저녁',mood:'한숨 돌리는',pplSpot:'벤치 팔걸이 위',visual:'small office rooftop garden at sunset, potted plants, wooden bench, railing, warm orange sky'},
+    {name:'지하철 승강장',desc:'막차를 기다리는 한산한 승강장. 스크린도어에 두 사람이 비친다.',time:'밤',mood:'하루를 마무리하는',pplSpot:'벤치 옆 가방 주머니',visual:'quiet subway platform late at night, platform screen doors, soft fluorescent light, a single bench'},
+  ];
+}
+async function demoDesign(kind,n){
+  await sleep(700);
+  return (kind==='char'?demoChars().map(normChar):demoBgs().map(normBg)).slice(0,n);
+}
+function demoScenarioRaw(){
+  const p=S.project,b=p.brief,cs=p.characters,bs=p.backgrounds;
+  const A=cs[0],B=cs[1]||cs[0],two=cs.length>1,b1=bs[0],b2=bs[1]||bs[0],P=b.product||'제품';
+  const ai=cs.indexOf(A),bi=cs.indexOf(B),a='c'+(ai+1),bb='c'+(bi+1),g1='b'+(bs.indexOf(b1)+1),g2='b'+(bs.indexOf(b2)+1);
+  const food=b.category==='식음료';
+  const V=food?{use:'매일 마시던데요',open:'뚜껑을 딴다',taste:'한 모금에',sfx:'치익—'}:{use:'늘 쓰던데요',open:'포장을 연다',taste:'써 보자마자',sfx:'달칵'};
+  const beats=[
+    {pri:1,bg:g1,chars:[a],shot:'wide',action:`하루가 저문 ${b1.name}. ${A.name} 혼자 남아 기지개를 켠다.`,lines:[{who:'',type:'narr',text:'오늘도 마지막까지 남은 건 나다.'}],sfx:'',pplLevel:0},
+    {pri:5,bg:g1,chars:[a],shot:'close',action:`책상 위 빈 ${josa(P,'을/를')} 흔들어 보고 실망하는 ${A.name}.`,lines:[{who:a,type:'say',text:'아… 다 떨어졌네.'},{who:a,type:'think',text:'문 닫기 전에 가야 해.'}],sfx:'',pplLevel:1,pplNote:`책상 위에 놓인 빈 ${P}`},
+    {pri:9,bg:g1,chars:[a],shot:'medium',action:`가방을 챙겨 급히 일어서는 ${A.name}.`,lines:[],sfx:'벌떡',pplLevel:0},
+    {pri:6,bg:g2,chars:[a],shot:'wide',action:`${b2.name}까지 뛰어가는 ${A.name}. 불빛이 길을 비춘다.`,lines:[],sfx:'다다다',pplLevel:0},
+    {pri:2,bg:g2,chars:two?[a,bb]:[a],shot:'medium',action:two?`입구에서 ${josa(B.name,'과/와')} 마주친다. 둘 다 잠깐 멈칫한다.`:`진열대 앞에 멈춰 선 ${A.name}. 딱 하나가 남아 있다.`,lines:two?[{who:a,type:'say',text:'어?'},{who:bb,type:'say',text:`…${A.name} 씨?`}]:[{who:a,type:'think',text:'딱 하나 남았다.'}],sfx:'',pplLevel:0},
+    {pri:10,bg:g2,chars:two?[bb]:[a],shot:'ots',action:two?`${B.name}의 시선이 진열대 쪽으로 향한다.`:`진열대로 손을 뻗는 ${A.name}.`,lines:[],sfx:'',pplLevel:1,pplNote:`진열대에 놓인 ${P}`},
+    {pri:3,bg:g2,chars:two?[bb]:[a],shot:'close',action:two?`${josa(B.name,'이/가')} ${josa(P,'을/를')} 꺼내 무심하게 내민다.`:`${josa(A.name,'이/가')} ${josa(P,'을/를')} 집어 든다.`,lines:two?[{who:bb,type:'say',text:`${P}, ${V.use}.`}]:[{who:a,type:'say',text:`역시 ${P}지.`}],sfx:'',pplLevel:3,pplNote:`손에 든 ${P}, 라벨이 정면`},
+    {pri:7,bg:g2,chars:two?[a,bb]:[a],shot:'medium',action:`${josa(A.name,'이/가')} 받아 들고 ${V.open}.`,lines:two?[{who:a,type:'say',text:'…그걸 어떻게 아세요?'}]:[],sfx:V.sfx,pplLevel:2,pplNote:`${josa(P,'을/를')} 여는 ${A.name}의 손`},
+    {pri:4,bg:g2,chars:[a],shot:'close',action:`${V.taste} 눈이 커지는 ${A.name}. 볼이 살짝 붉어진다.`,lines:[{who:a,type:'think',text:two?'상큼한 건 이건데, 왜 심장이 뛰지.':'이 맛에 하루를 버틴다.'}],sfx:'',pplLevel:4,pplNote:`${P} 라벨이 또렷한 클로즈업`},
+    {pri:11,bg:g2,chars:two?[bb]:[a],shot:'close',action:two?`${josa(B.name,'이/가')} 시선을 피하며 작게 웃는다.`:`${josa(A.name,'이/가')} 밤하늘을 올려다본다.`,lines:[],sfx:'',pplLevel:0},
+    {pri:12,bg:g2,chars:two?[a,bb]:[a],shot:'high',action:'테이블 위로 두 손이 나란히 놓인다.',lines:[{who:a,type:'shout',text:'내일도 힘내요!'}],sfx:'',pplLevel:0},
+    {pri:8,bg:g2,chars:two?[a,bb]:[a],shot:'wide',action:two?'나란히 걷는 두 사람의 뒷모습. 불빛이 멀어진다.':`가벼워진 걸음으로 돌아가는 ${A.name}.`,lines:two?[{who:bb,type:'say',text:'내일도 야근이면, 제가 살게요.'},{who:'',type:'narr',text:'퇴근길이 조금 기다려지기 시작했다.'}]:[{who:'',type:'narr',text:'내일도 잘 버틸 수 있을 것 같다.'}],sfx:'',pplLevel:0},
+  ];
+  const n=clamp(b.cuts,1,beats.length);
+  return {title:food?`야근 끝, ${P} 한 캔`:`야근 끝, ${P}`,logline:'말없이 건넨 하나가 두 사람의 퇴근길을 바꾼다.',
+    synopsis:`${josa(A.name,'은/는')} 오늘도 혼자 야근 중이다. 떨어진 ${josa(P,'을/를')} 사러 나선 길에서 ${two?josa(B.name,'과/와')+' 마주치고, 그가 자신의 취향을 기억하고 있었다는 걸 알게 된다':'작은 위로를 발견한다'}.`,
+    cuts:beats.filter(x=>x.pri<=n)};
+}
+
+/* ═══ 30 · 화면 ═══ */
+const fid=path=>'f-'+path.replace(/\./g,'-');
+const fText=(label,path,ph='')=>`<div class="field"><label class="lb" for="${fid(path)}">${label}</label><input class="in" id="${fid(path)}" data-bind="${path}" value="${esc(getPath(S,path))}" placeholder="${esc(ph)}"></div>`;
+const fArea=(label,path,rows=2,ph='',cls='')=>`<div class="field"><label class="lb" for="${fid(path)}">${label}</label><textarea class="in ${cls}" id="${fid(path)}" data-bind="${path}" rows="${rows}" placeholder="${esc(ph)}">${esc(getPath(S,path))}</textarea></div>`;
+function fSelect(label,path,options){
+  const cur=getPath(S,path);
+  return `<div class="field"><label class="lb" for="${fid(path)}">${label}</label><select class="in" id="${fid(path)}" data-bind="${path}">${options.map(o=>{const v=o.id??o,t=o.ko??o;return `<option value="${esc(v)}" ${String(v)===String(cur)?'selected':''}>${esc(t)}</option>`}).join('')}</select></div>`;
+}
+const seg=(path,options,o={})=>`<div class="seg" role="group">${options.map(x=>{const v=x.id??x,t=x.ko??x;return `<button type="button" data-act="setVal" data-path="${path}" data-v="${esc(v)}" ${o.num?'data-num':''} ${o.bool?'data-bool':''} aria-pressed="${String(getPath(S,path))===String(v)}">${esc(t)}</button>`}).join('')}</div>`;
+const chipSet=(path,options,max=0)=>`<div class="chips">${options.map(x=>{const v=x.id??x,t=x.ko??x,cur=getPath(S,path);return `<button type="button" class="chip" data-act="toggleIn" data-path="${path}" data-v="${esc(v)}" data-max="${max}" aria-pressed="${Array.isArray(cur)?cur.includes(v):cur===v}">${x.sw?`<span class="sw">${x.sw.map(c=>`<i style="background:${c}"></i>`).join('')}</span>`:''}${esc(t)}</button>`}).join('')}</div>`;
+const busyHTML=id=>BUSY.has(id)?`<div class="busy"><i class="spin"></i>${esc(BUSY.get(id))}</div>`:'';
+const kindTag=id=>({demo:'<span class="tag">데모</span>',upload:'<span class="tag">업로드</span>'}[imgKind(id)]||'');
+
+function stepStatus(){
+  const p=S.project,miss=briefReady().filter(x=>!x.ok).length;
+  const nc=p.characters.length,nb=p.backgrounds.length,cuts=p.scenario.cuts,n=cuts.length;
+  const ci=p.characters.filter(c=>c.image).length,bi=p.backgrounds.filter(c=>c.image).length,wi=cuts.filter(c=>c.image).length;
+  return {
+    brief:{done:!miss,text:miss?`필수 ${miss}개 남음`:'입력 완료'},
+    chars:{done:nc>0&&ci===nc,text:nc?`${nc}명 · 시트 ${ci}/${nc}`:'아직 없음'},
+    bgs:{done:nb>0&&bi===nb,text:nb?`${nb}곳 · 그림 ${bi}/${nb}`:'아직 없음'},
+    scenario:{done:n>0,text:n?`${n}컷 · PPL ${cuts.filter(c=>c.ppl>0).length}컷`:'아직 없음'},
+    webtoon:{done:n>0&&wi===n,text:n?`그림 ${wi}/${n}컷`:'시나리오 필요'},
+    export:{done:false,text:n?'검수 후 저장':'원고 필요'},
+  };
+}
+function railHTML(){
+  const st=stepStatus(),demo=isDemo();
+  return `<div class="brand">${LOGO}<div><b>컷인 스튜디오</b><span>웹툰 PPL 저작 도구</span></div></div>
+  <nav class="steps" aria-label="작업 단계">${STEPS.map(s=>`<button type="button" class="step ${S.step===s.id?'on':''} ${st[s.id].done?'done':''}" data-act="go" data-step="${s.id}" ${S.step===s.id?'aria-current="step"':''}><span class="no">${s.no}</span><span class="nm">${s.name}</span><span class="meta">${esc(st[s.id].text)}</span></button>`).join('')}</nav>
+  <div class="rail-foot"><button type="button" class="conn ${demo?'':'live'}" data-act="openSettings"><i></i><span><b>${demo?'데모 모드':'Gemini 연결됨'}</b>${demo?'<small>API 키를 넣으면 실제로 생성합니다</small>':`<small>글 ${esc(modelPath(S.settings.textModel))}</small><small>그림 ${esc(modelPath(S.settings.imageModel))}</small>`}</span></button></div>`;
+}
+function topHTML(){
+  const p=S.project,b=S.batch;
+  return `<input class="pname" id="pname" data-bind="project.name" value="${esc(p.name)}" aria-label="프로젝트 이름">
+  ${p.sample?'<span class="tag blue">예시 프로젝트</span>':''}<span class="sp"></span>
+  ${b?`<div class="batch"><span>${esc(b.label)} ${b.done}/${b.total}</span><span class="bar"><i style="width:${Math.round(b.done/b.total*100)}%"></i></span><button type="button" class="btn sm" data-act="cancelBatch">중단</button></div>`:''}
+  <button type="button" class="btn sm ghost" data-act="newProject">새 프로젝트</button>
+  <label class="btn sm ghost" tabindex="0">불러오기<input type="file" accept=".json,application/json" hidden data-file="project"></label>
+  <button type="button" class="btn sm" data-act="saveProject">프로젝트 저장</button>`;
+}
+function head(id,actions=''){
+  const s=STEPS.find(x=>x.id===id);
+  return `<header class="sh"><div><p class="no">STEP ${s.no} / 06</p><h1>${s.name}</h1><p class="lead">${s.desc}</p></div><div class="sh-a">${actions}</div></header>`;
+}
+function footNav(){
+  const i=STEPS.findIndex(s=>s.id===S.step),p=STEPS[i-1],n=STEPS[i+1];
+  return `<nav class="fnav" aria-label="단계 이동">${p?`<button type="button" class="btn" data-act="go" data-step="${p.id}">← ${p.name}</button>`:'<span></span>'}${n?`<button type="button" class="btn pri" data-act="go" data-step="${n.id}">다음: ${n.name} →</button>`:''}</nav>`;
+}
+const demoBarHTML=()=>`<div class="demobar"><b>데모 모드</b><span>Gemini API 키가 없어서 예시 문장과 채색 러프로 흐름만 보여 줍니다.</span><button type="button" class="lnk" data-act="openSettings">API 키 넣기</button></div>`;
+
+const VIEWS={};
+
+/* ── 01 브리프 ── */
+function briefSideHTML(){
+  const b=S.project.brief,r=briefReady(),lv=clamp(b.pplLevel,1,5),[lo,hi]=TARGET[lv-1];
+  return `<h2>브리프 요약</h2>
+  <ul class="chk">${r.map(x=>`<li class="${x.ok?'ok':''}">${x.l}</li>`).join('')}<li class="${b.productImages.length?'ok':''}">제품 사진 (선택)</li></ul>
+  <dl class="sum">
+    <dt>제품</dt><dd>${esc([b.brand,b.product].filter(Boolean).join(' ')||'미입력')} · ${esc(b.category)}</dd>
+    <dt>이야기</dt><dd>${esc([...b.genres,...b.tones].join(' · ')||'장르·톤 미선택')}</dd>
+    <dt>PPL</dt><dd>${lv}단계 ${INTENSITY[lv-1].ko} · 목표 노출 ${lo}–${hi}%</dd>
+    <dt>포맷</dt><dd>${b.cuts}컷 · ${esc(b.ratio)} · ${esc(styleOf().ko)}</dd>
+    <dt>표기</dt><dd>${esc(disclosureText()||'광고 표기 없음')}</dd>
+  </dl>
+  <details data-keep="briefRaw" ${S.ui.open.briefRaw?'open':''}><summary>Gemini에 전달되는 브리프 원문</summary><pre class="raw">${esc(briefBlock())}</pre></details>
+  <button type="button" class="btn gen wide" data-act="designAll">캐릭터·배경 자동 설계</button>
+  <p class="hint">자물쇠를 켠 캐릭터와 배경은 그대로 두고 나머지를 새로 설계합니다.</p>`;
+}
+VIEWS.brief=()=>{
+  const b=S.project.brief;
+  return `${head('brief')}
+  <div class="two">
+   <div class="col">
+    <section class="card sec"><h2>제품·브랜드</h2><p class="sub">웹툰에 녹일 제품 정보입니다. 제품 사진을 올리면 컷을 그릴 때 모양과 라벨을 그대로 참조합니다.</p>
+      <div class="fg2">${fText('브랜드명','project.brief.brand','예: 새벽상회')}${fText('제품명','project.brief.product','예: 유자톡')}${fSelect('카테고리','project.brief.category',CATEGORIES)}${fText('타깃 독자','project.brief.target','예: 20대 직장인')}</div>
+      ${fArea('핵심 메시지 (USP)','project.brief.usp',2,'독자가 기억했으면 하는 한 문장')}
+      ${fArea('제품 외형','project.brief.desc',2,'색, 형태, 패키지 특징. 사진이 없으면 이 설명으로 그립니다.')}
+      <div class="field"><span class="lb">제품 사진 (최대 3장)</span><div class="uploads">
+        ${b.productImages.map((id,i)=>`<div class="up"><img src="${imgURL(id)}" alt="제품 사진 ${i+1}"><button type="button" class="icon" data-act="delProductImg" data-i="${i}" aria-label="제품 사진 ${i+1} 삭제">${ICON.x}</button></div>`).join('')}
+        ${b.productImages.length<3?`<label class="up-add" tabindex="0">사진<br>올리기<input type="file" accept="image/*" multiple hidden data-file="product"></label>`:''}
+      </div></div>
+      <div class="fg2">${fArea('꼭 넣을 요소','project.brief.must',2,'쉼표로 구분. 예: 로고 정면, 마시는 장면')}${fArea('피해야 할 요소','project.brief.avoid',2,'쉼표로 구분. 예: 음주 연상, 과장된 효능')}</div>
+    </section>
+    <section class="card sec"><h2>스토리 프롬프트</h2>
+      ${fArea('어떤 이야기인가요?','project.brief.prompt',4,'상황, 인물 관계, 결말의 느낌을 자유롭게 적어 주세요.')}
+      <div class="field"><span class="lb">장르 (최대 3개)</span>${chipSet('project.brief.genres',GENRES,3)}</div>
+      <div class="field"><span class="lb">톤</span>${chipSet('project.brief.tones',TONES,3)}</div>
+    </section>
+    <section class="card sec"><h2>PPL 전략</h2><p class="sub">수위에 따라 시나리오의 권장 노출 비율이 달라집니다.</p>
+      <div class="scale" role="group" aria-label="PPL 수위">${INTENSITY.map((x,i)=>`<button type="button" data-act="setVal" data-path="project.brief.pplLevel" data-v="${i+1}" data-num aria-pressed="${b.pplLevel===i+1}"><span class="bar" style="--n:${i+1}"><i></i></span><b>${i+1}. ${x.ko}</b><small>${x.d} · ${TARGET[i][0]}–${TARGET[i][1]}%</small></button>`).join('')}</div>
+      <div class="field"><span class="lb">노출 방식</span>${chipSet('project.brief.pplModes',PPL_MODES)}</div>
+      <div class="field"><span class="lb">광고 표기</span>${seg('project.brief.disclosure',DISCLOSURES)}<p class="hint">${esc(disclosureText()?`원고에 “${disclosureText()}” 문구가 들어갑니다.`:'원고에 광고 표기가 들어가지 않습니다. 게재 전에 플랫폼 기준을 확인해 주세요.')}</p></div>
+    </section>
+    <section class="card sec"><h2>작화·포맷</h2>
+      <div class="field"><span class="lb">그림체</span>${chipSet('project.brief.style',STYLES)}</div>
+      ${fText('그림체 추가 지시','project.brief.styleNote','예: 따뜻한 색감, 굵은 외곽선, 역광. 모든 그림 프롬프트에 붙습니다.')}
+      <div class="fg2">
+        <div class="field"><span class="lb">컷 수</span>${seg('project.brief.cuts',[4,6,8,10,12],{num:1})}</div>
+        <div class="field"><span class="lb">대사 언어</span>${seg('project.brief.lang',Object.keys(LANG_KO).map(k=>({id:k,ko:LANG_KO[k]})))}</div>
+      </div>
+      <div class="field"><span class="lb">컷 화면비</span>${seg('project.brief.ratio',RATIOS)}</div>
+    </section>
+   </div>
+   <aside class="card sec sticky" data-live="briefSide">${briefSideHTML()}</aside>
+  </div>`;
+};
+
+/* ── 02·03 캐릭터·배경 ── */
+const KIND={
+  char:{list:'characters',step:'chars',label:'캐릭터',unit:'명',ratio:'3:4',nKey:'nChars',img:'시트',ph:'예: 주인공은 30대 남성 셰프, 조연은 단골손님'},
+  bg:{list:'backgrounds',step:'bgs',label:'배경',unit:'곳',ratio:'16:9',nKey:'nBgs',img:'그림',ph:'예: 비 오는 저녁, 네온사인이 비치는 골목'},
+};
+const entSketch=(kind,e)=>kind==='char'?charSVG(e):bgSVG(e);
+function entPic(kind,e,tagName='button'){
+  const K=KIND[kind],inner=`${e.image?`<img src="${imgURL(e.image)}" alt="${esc(e.name)} ${K.label} ${K.img}">${kindTag(e.image)}`:`${entSketch(kind,e)}<span class="tag blue">러프</span>`}${busyHTML(e.id)}`;
+  return tagName==='button'?`<button type="button" class="pic ${kind}" data-act="editEnt" data-kind="${kind}" data-id="${e.id}" aria-label="${esc(e.name)} 편집">${inner}</button>`:`<div class="pic ${kind}">${inner}</div>`;
+}
+function entCard(kind,e){
+  const busy=BUSY.has(e.id);
+  return `<article class="ent">
+    ${entPic(kind,e)}
+    <div class="ent-b">
+      <div class="ent-h"><h3>${esc(e.name||'이름 없음')}</h3>${kind==='char'?`<span class="tag">${esc(e.role)}</span>`:`<span class="tag">${esc(e.time)}</span>`}
+        <button type="button" class="icon ${e.locked?'on':''}" data-act="lockEnt" data-kind="${kind}" data-id="${e.id}" aria-pressed="${!!e.locked}" title="자동 설계 때 이 ${KIND[kind].label} 유지" aria-label="자동 설계 때 유지">${e.locked?ICON.lock:ICON.unlock}</button></div>
+      ${kind==='char'?`<p class="meta">${esc([e.age?e.age+'세':'',e.gender].filter(Boolean).join(' · '))}</p><p class="desc">${esc(e.personality)}</p>${e.pplLink?`<p class="pplnote"><mark>PPL</mark> ${esc(e.pplLink)}</p>`:''}`
+        :`<p class="meta">${esc(e.mood)}</p><p class="desc">${esc(e.desc)}</p>${e.pplSpot?`<p class="pplnote"><mark>PPL</mark> ${esc(e.pplSpot)}</p>`:''}`}
+      <div class="ent-a"><button type="button" class="btn sm gen" data-act="genEnt" data-kind="${kind}" data-id="${e.id}" ${busy?'disabled':''}>${e.image?'다시 그리기':KIND[kind].img+' 그리기'}</button><button type="button" class="btn sm" data-act="editEnt" data-kind="${kind}" data-id="${e.id}">편집</button></div>
+    </div></article>`;
+}
+function entView(kind){
+  const K=KIND[kind],list=S.project[K.list],b=S.project.brief,busy=BUSY.has('design-'+kind);
+  const missing=list.filter(e=>!e.image).length;
+  return `${head(K.step,`<button type="button" class="btn" data-act="addEnt" data-kind="${kind}">직접 추가</button>
+    <button type="button" class="btn gen" data-act="genAllEnt" data-kind="${kind}" ${list.length&&!S.batch?'':'disabled'}>${missing?`${K.img} ${missing}장 그리기`:`${K.img} 전부 다시 그리기`}</button>`)}
+  <div class="card promptbar">
+    <label class="lb" for="req-${kind}">추가 요청</label>
+    <input class="in" id="req-${kind}" data-bind="ui.req.${kind}" value="${esc(S.ui.req[kind])}" placeholder="${K.ph}">
+    ${seg('project.brief.'+K.nKey,[1,2,3,4].map(n=>({id:n,ko:n+K.unit})),{num:1})}
+    <button type="button" class="btn gen" data-act="design" data-kind="${kind}" ${busy?'disabled':''}>${busy?'설계하는 중…':`${K.label} 자동 설계`}</button>
+  </div>
+  ${list.length?`<div class="grid ${kind}">${list.map(e=>entCard(kind,e)).join('')}</div>`
+    :`<div class="empty"><b>아직 ${K.label}${kind==='char'?'가':'이'} 없습니다</b><p>브리프를 바탕으로 ${b[K.nKey]}${K.unit}을 자동으로 설계하거나, 직접 추가해 설정을 적을 수 있습니다.</p><button type="button" class="btn gen" data-act="design" data-kind="${kind}" ${busy?'disabled':''}>${busy?'설계하는 중…':`${K.label} 자동 설계`}</button></div>`}`;
+}
+VIEWS.chars=()=>entView('char');
+VIEWS.bgs=()=>entView('bg');
+
+function drawerHTML(){
+  const d=S.ui.drawer;if(!d)return '';
+  const K=KIND[d.kind],i=S.project[K.list].findIndex(e=>e.id===d.id);if(i<0)return '';
+  const e=S.project[K.list][i],base=`project.${K.list}.${i}`,busy=BUSY.has(e.id);
+  const fields=d.kind==='char'
+    ?`<div class="fg2">${fText('이름',base+'.name')}${fSelect('역할',base+'.role',ROLES)}${fText('나이',base+'.age')}${fSelect('성별',base+'.gender',GENDERS)}</div>
+      ${fArea('성격',base+'.personality',2)}${fArea('외형',base+'.appearance',2)}${fText('의상',base+'.outfit')}${fText('말투',base+'.speech')}${fArea('PPL 접점',base+'.pplLink',2,'이 인물이 제품을 만나는 자연스러운 이유')}`
+    :`${fText('장소 이름',base+'.name')}${fArea('장소 설명',base+'.desc',2)}<div class="fg2">${fSelect('시간대',base+'.time',TIMES)}${fText('분위기',base+'.mood')}</div>${fArea('PPL 배치 포인트',base+'.pplSpot',2,'제품이 자연스럽게 놓이거나 쓰일 자리')}`;
+  return `<div class="dr-bg" data-act="closeDrawer"></div>
+  <aside class="dr" role="dialog" aria-label="${K.label} 편집">
+    <header><h2>${K.label} 편집</h2><button type="button" class="icon" data-act="closeDrawer" aria-label="닫기">${ICON.x}</button></header>
+    <div class="dr-body" data-scroll="drawer">
+      ${entPic(d.kind,e,'div')}
+      ${e.variants.length>1?`<div class="field"><span class="lb">지금까지 그린 ${K.img}</span><div class="vars">${e.variants.map(v=>`<button type="button" class="${v===e.image?'on':''}" data-act="pickVariant" data-kind="${d.kind}" data-id="${e.id}" data-img="${v}" aria-label="이 ${K.img} 사용"><img src="${imgURL(v)}" alt=""></button>`).join('')}</div></div>`:''}
+      <div class="row"><button type="button" class="btn sm gen" data-act="genEnt" data-kind="${d.kind}" data-id="${e.id}" ${busy?'disabled':''}>${e.image?'다시 그리기':K.img+' 그리기'}</button>
+        <label class="btn sm" tabindex="0">내 이미지 올리기<input type="file" accept="image/*" hidden data-file="ent" data-kind="${d.kind}" data-id="${e.id}"></label></div>
+      <p class="hint">${d.kind==='char'?'올린 이미지를 선택한 채로 다시 그리면 그 인물의 얼굴과 옷을 바탕으로 시트를 그립니다.':'올린 이미지를 선택한 채로 다시 그리면 그 장소를 바탕으로 그림체를 맞춥니다.'}</p>
+      ${fields}
+      ${fArea('영문 비주얼 태그',base+'.visual',3,'이미지 모델에 그대로 전달됩니다','mono')}
+      <details data-keep="entPrompt" ${S.ui.open.entPrompt?'open':''}><summary>이미지 프롬프트 미리보기</summary><pre class="raw" data-live="entPrompt">${esc(entPrompt(d.kind,e))}</pre></details>
+      <div class="row" style="justify-content:flex-end"><button type="button" class="btn sm danger" data-act="delEnt" data-kind="${d.kind}" data-id="${e.id}">이 ${K.label} 삭제</button></div>
+    </div>
+  </aside>`;
+}
+
+/* ── 04 시나리오 ── */
+function pplPanelHTML(){
+  const st=pplStats(),cuts=S.project.scenario.cuts,hints=pplHints();
+  return `<h2>PPL 노출 설계</h2>
+  <div><div class="tl" role="group" aria-label="컷별 노출 단계">${cuts.map((c,i)=>`<button type="button" data-act="scrollCut" data-id="${c.id}" title="C${pad2(i+1)} · ${PPL[c.ppl].ko}" aria-label="C${pad2(i+1)} ${PPL[c.ppl].ko}"><i class="${c.ppl?'':'z'}" style="--h:${PPL[c.ppl].h}"></i></button>`).join('')}</div>
+  <div class="tl-x" aria-hidden="true">${cuts.map((c,i)=>`<span>${pad2(i+1)}</span>`).join('')}</div></div>
+  <div class="tl-k">${PPL.slice(1).map(p=>`<span><i style="--h:${p.h}"></i>${p.ko}</span>`).join('')}</div>
+  <div class="stats">
+    <div class="stat ${st.state==='ok'?'ok':'warn'}"><b>${st.share}%</b><span>노출 컷 ${st.exp}/${st.n} · 목표 ${st.lo}–${st.hi}%</span></div>
+    <div class="stat"><b>${st.first<0?'–':'C'+pad2(st.first+1)}</b><span>첫 노출</span></div>
+    <div class="stat"><b>${st.mentions}회</b><span>대사 속 제품명</span></div>
+    <div class="stat"><b>${st.hero}컷</b><span>클로즈업</span></div>
+  </div>
+  <ul class="hints">${hints.length?hints.map(h=>`<li>${esc(h)}</li>`).join(''):'<li class="ok">노출 설계가 목표 범위 안에 있습니다.</li>'}</ul>`;
+}
+function linesEditor(cut,ci,withTail){
+  const cs=S.project.characters;
+  return `<div class="lines">${cut.lines.map((ln,li)=>{
+    const base=`project.scenario.cuts.${ci}.lines.${li}`,spoken=['say','think','shout'].includes(ln.type);
+    return `<div class="ln">
+      <select class="in" data-bind="${base}.type" aria-label="종류">${LINE_TYPES.map(t=>`<option value="${t.id}" ${t.id===ln.type?'selected':''}>${t.ko}</option>`).join('')}</select>
+      ${spoken?`<select class="in" data-bind="${base}.who" aria-label="화자"><option value="">화자 없음</option>${cs.map(c=>`<option value="${c.id}" ${c.id===ln.who?'selected':''}>${esc(c.name)}</option>`).join('')}</select>`:''}
+      <input class="in" data-bind="${base}.text" value="${esc(ln.text)}" aria-label="내용" placeholder="${ln.type==='sfx'?'효과음':'내용'}">
+      ${withTail&&(ln.type==='say'||ln.type==='think')?`<button type="button" class="icon" data-act="cycleTail" data-ci="${ci}" data-li="${li}" title="말꼬리 방향" aria-label="말꼬리 방향 바꾸기">${ln.tail==='left'?ICON.tailL:ln.tail==='right'?ICON.tailR:ICON.tailN}</button>`:''}
+      <button type="button" class="icon" data-act="delLine" data-ci="${ci}" data-li="${li}" aria-label="이 줄 삭제">${ICON.x}</button></div>`;
+  }).join('')}<button type="button" class="btn sm ghost" data-act="addLine" data-ci="${ci}">+ 줄 추가</button></div>`;
+}
+const ratioCSS=()=>S.project.brief.ratio.replace(':','/');
+function cutCard(cut,i){
+  const p=S.project,base=`project.scenario.cuts.${i}`,n=p.scenario.cuts.length,busy=BUSY.has('rw-'+cut.id);
+  return `<article class="cut" id="cut-${cut.id}">
+    <div class="cut-l"><div class="cno">C${pad2(i+1)}</div>
+      <div class="thumb" style="aspect-ratio:${ratioCSS()}">${cut.image?`<img src="${imgURL(cut.image)}" alt="C${pad2(i+1)} 그림">`:cutSVG(cut)}</div>
+      <div class="mv"><button type="button" class="icon" data-act="moveCut" data-i="${i}" data-d="-1" ${i?'':'disabled'} aria-label="위로">${ICON.up}</button><button type="button" class="icon" data-act="moveCut" data-i="${i}" data-d="1" ${i<n-1?'':'disabled'} aria-label="아래로">${ICON.down}</button><button type="button" class="icon" data-act="dupCut" data-i="${i}" aria-label="복제">${ICON.copy}</button><button type="button" class="icon" data-act="delCut" data-i="${i}" aria-label="삭제">${ICON.trash}</button></div></div>
+    <div class="cut-m">
+      <div class="fg2">${fSelect('배경',base+'.bg',[{id:'',ko:'배경 미지정'},...p.backgrounds.map(b=>({id:b.id,ko:b.name}))])}${fSelect('샷',base+'.shot',SHOTS)}</div>
+      <div class="field"><span class="lb">등장 캐릭터</span><div class="chips">${p.characters.map(c=>`<button type="button" class="chip" data-act="toggleCutChar" data-i="${i}" data-id="${c.id}" aria-pressed="${cut.chars.includes(c.id)}">${esc(c.name)}</button>`).join('')||'<span class="hint">캐릭터가 없습니다.</span>'}</div></div>
+      ${fArea('연출·행동',base+'.action',2,'독자가 이 컷에서 보게 되는 것')}
+      <div class="field"><span class="lb">대사·내레이션·효과음</span>${linesEditor(cut,i,false)}</div>
+    </div>
+    <div class="cut-r"><span class="lb">PPL 노출</span>
+      <div class="pplsel" role="group" aria-label="C${pad2(i+1)} PPL 노출 단계">${PPL.map((x,l)=>`<button type="button" class="${cut.ppl===l?'on':''}" data-act="setPpl" data-i="${i}" data-l="${l}" aria-pressed="${cut.ppl===l}"><i style="--h:${x.h}"></i>${x.ko}</button>`).join('')}</div>
+      ${cut.ppl?`<input class="in" data-bind="${base}.pplNote" value="${esc(cut.pplNote)}" aria-label="노출 방법 메모" placeholder="제품이 어떻게 보이나요?">`:''}
+      <div class="rw"><input class="in" data-bind="ui.rw.${cut.id}" value="${esc(S.ui.rw[cut.id]||'')}" aria-label="이 컷 수정 지시" placeholder="이 컷만 이렇게 고쳐 줘"><button type="button" class="btn sm gen" data-act="rewriteCut" data-i="${i}" ${busy?'disabled':''}>${busy?'고치는 중…':'이 컷 다시 쓰기'}</button></div>
+    </div></article>`;
+}
+VIEWS.scenario=()=>{
+  const p=S.project,sc=p.scenario,busy=BUSY.has('scenario'),ready=p.characters.length&&p.backgrounds.length;
+  const genBtn=`<button type="button" class="btn gen" data-act="genScenario" ${busy||!ready?'disabled':''}>${busy?'쓰는 중…':sc.cuts.length?'시나리오 다시 쓰기':`${p.brief.cuts}컷 시나리오 쓰기`}</button>`;
+  return `${head('scenario',sc.cuts.length?'<button type="button" class="btn" data-act="addCut">컷 추가</button>':'')}
+  ${ready?'':'<div class="note">시나리오를 쓰려면 캐릭터와 배경이 하나 이상 있어야 합니다.</div>'}
+  <div class="card promptbar"><label class="lb" for="req-scenario">추가 지시</label>
+    <input class="in" id="req-scenario" data-bind="ui.req.scenario" value="${esc(S.ui.req.scenario)}" placeholder="예: 마지막 컷에 반전을 넣고, 제품은 4컷 이후에 등장">${genBtn}</div>
+  ${sc.cuts.length?`<div class="sc-top">
+      <section class="card sec"><h2>이야기</h2>${fText('제목','project.scenario.title')}${fText('로그라인','project.scenario.logline')}${fArea('시놉시스','project.scenario.synopsis',3)}</section>
+      <section class="card sec" data-live="pplPanel">${pplPanelHTML()}</section>
+    </div>
+    <div class="cuts">${sc.cuts.map(cutCard).join('')}</div>`
+   :`<div class="empty"><b>아직 시나리오가 없습니다</b><p>${p.characters.length}명의 캐릭터와 ${p.backgrounds.length}곳의 배경으로 ${p.brief.cuts}컷 분량의 콘티를 씁니다. 컷마다 PPL 노출 단계도 함께 제안합니다.</p>${genBtn}</div>`}`;
+};
+
+/* ── 05 웹툰 ── */
+const BUB={
+  say:{fs:3.7,px:1.25,py:.8,font:'bubble',weight:400},
+  think:{fs:4.3,px:1.2,py:.7,font:'hand',weight:700},
+  shout:{fs:4.4,px:1.9,py:1.5,font:'display',weight:400},
+  narr:{fs:3.3,px:.85,py:.6,font:'body',weight:500},
+  sfx:{fs:8.5,px:0,py:0,font:'display',weight:400},
+};
+const BURST=(()=>{const r=rng(77),pts=[];for(let k=0;k<28;k++){const a=k*Math.PI/14,rad=k%2?39+r()*3:50-r()*2.5;pts.push([n1(50+rad*Math.cos(a)),n1(50+rad*Math.sin(a))])}return pts})();
+const TAIL={left:{line:'M2 0L4 17L18 0',patch:'M3.1 0L4.6 12.5L6.5 12.5L17 0Z'},right:{line:'M18 0L16 17L2 0',patch:'M16.9 0L15.4 12.5L13.5 12.5L3 0Z'}};
+function bubbleHTML(ln,cut){
+  if(!String(ln.text).trim())return '';
+  const t=BUB[ln.type]?ln.type:'say',B=BUB[t];
+  const shape={say:'<ellipse cx="50" cy="50" rx="49.5" ry="49.5"/>',think:'<ellipse cx="50" cy="50" rx="49.5" ry="49.5"/>',shout:`<polygon points="${BURST.map(p=>p.join(',')).join(' ')}"/>`,narr:'<rect x=".5" y=".5" width="99" height="99"/>'}[t];
+  const dir=ln.tail==='right'?'right':ln.tail==='left'?'left':'';
+  let tail='';
+  if(dir&&t==='say')tail=`<svg class="tail ${dir}" viewBox="0 0 20 18" aria-hidden="true"><path d="${TAIL[dir].line}"/></svg><svg class="tail patch ${dir}" viewBox="0 0 20 18" aria-hidden="true"><path d="${TAIL[dir].patch}"/></svg>`;
+  if(dir&&t==='think')tail=`<span class="dots ${dir}"><i></i><i></i></span>`;
+  return `<div class="bub b-${t}" data-line="${ln.id}" data-cut="${cut.id}" style="left:${ln.x}%;top:${ln.y}%;max-width:${ln.w}%;font:${B.weight} ${B.fs}cqw/1.35 var(--f-${B.font});padding:${B.py}em ${B.px}em">${shape?`<svg class="shape" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">${shape}</svg>`:''}${tail}<span class="tx">${esc(ln.text)}</span></div>`;
+}
+function panelInner(cut){
+  const i=S.project.scenario.cuts.indexOf(cut);
+  return `${cut.image?`<img src="${imgURL(cut.image)}" alt="C${pad2(i+1)}: ${esc(cut.action)}">`:cutSVG(cut)}
+    <div class="ptags"><span class="tag">C${pad2(i+1)}</span>${cut.image?kindTag(cut.image):'<span class="tag blue">러프</span>'}${cut.ppl?`<span class="tag ppl">PPL · ${PPL[cut.ppl].short}</span>`:''}</div>
+    ${cut.lines.map(ln=>bubbleHTML(ln,cut)).join('')}${busyHTML(cut.id)}`;
+}
+function titleCardHTML(){
+  const p=S.project,d=disclosureText();
+  if(!p.export.title)return d?`<div class="tcard slim"><span class="disc">${esc(d)}</span></div>`:'';
+  return `<div class="tcard">${d?`<span class="disc">${esc(d)}</span>`:''}<div class="tc-t"><b>${esc(p.scenario.title||p.name)}</b>${p.scenario.logline?`<span>${esc(p.scenario.logline)}</span>`:''}</div></div>`;
+}
+function endCardHTML(){
+  const p=S.project,b=p.brief,d=disclosureText();if(!p.export.end)return '';
+  const pid=b.productImages[0];
+  return `<div class="ecard"><div class="ec-l"><small>제작 지원</small><b>${esc(b.brand||'브랜드')}</b><em>${esc(b.product)}</em><span>${esc(b.usp)}</span></div>${pid?`<img class="ec-img" src="${imgURL(pid)}" alt="${esc(b.product)}">`:''}${d?`<span class="ec-d">${esc(d)}</span>`:''}</div>`;
+}
+function stripHTML(sel){
+  const p=S.project,cuts=p.scenario.cuts,g=`<div class="gap" style="height:${n1(p.export.gap/7.2)}cqw"></div>`;
+  const parts=[];
+  const t=titleCardHTML();if(t)parts.push(t+(p.export.title?g:''));
+  parts.push(cuts.map(c=>`<div class="panel ${c.id===sel?'sel':''}" data-act="selCut" data-id="${c.id}" data-live="panel" style="aspect-ratio:${ratioCSS()}">${panelInner(c)}</div>`).join(g));
+  const e=endCardHTML();if(e)parts.push(g+e);
+  return parts.join('');
+}
+function inspHTML(cut){
+  const p=S.project,i=p.scenario.cuts.indexOf(cut),base=`project.scenario.cuts.${i}`,busy=BUSY.has(cut.id),plan=cutPlan(cut),bg=bgById(cut.bg);
+  const want=[...cut.chars.map(charById).filter(Boolean).map(c=>({label:c.name,img:c.image})),...(bg?[{label:bg.name,img:bg.image}]:[]),...(cut.ppl?[{label:p.brief.product||'제품',img:p.brief.productImages[0]}]:[])];
+  const usable=id=>id&&IMG.has(id)&&(isDemo()||imgKind(id)!=='demo');
+  const miss=want.filter(w=>!usable(w.img)).length;
+  return `<div class="insp-h"><b class="cno">C${pad2(i+1)}</b><span>${esc(bg?.name||'배경 미지정')} · ${shotOf(cut.shot).ko}${cut.ppl?` · PPL ${PPL[cut.ppl].short}`:''}</span></div>
+  <div class="row"><button type="button" class="btn gen" data-act="genCut" data-id="${cut.id}" ${busy?'disabled':''}>${cut.image?'이 컷 다시 그리기':'이 컷 그리기'}</button>
+    <label class="btn sm" tabindex="0">직접 그린 그림 올리기<input type="file" accept="image/*" hidden data-file="cut" data-id="${cut.id}"></label></div>
+  ${cut.variants.length>1?`<div class="field"><span class="lb">지금까지 그린 그림</span><div class="vars">${cut.variants.map(v=>`<button type="button" class="${v===cut.image?'on':''}" data-act="pickCutVariant" data-id="${cut.id}" data-img="${v}" aria-label="이 그림 사용"><img src="${imgURL(v)}" alt=""></button>`).join('')}</div></div>`:''}
+  <div class="field"><span class="lb">함께 넘기는 참조 이미지</span><div class="refs">${want.map(w=>`<span class="ref ${usable(w.img)?'':'miss'}">${usable(w.img)?`<img src="${imgURL(w.img)}" alt="">`:'<span class="ph"></span>'}${esc(w.label)}</span>`).join('')||'<span class="hint">이 컷에는 참조할 대상이 없습니다.</span>'}</div>
+    ${miss?`<p class="hint">점선으로 표시된 ${miss}개는 ${isDemo()?'아직 그림이 없습니다':'아직 완성 그림이 없어 글 설명만 전달됩니다'}. 먼저 그려 두면 컷마다 생김새가 같게 유지됩니다.</p>`:''}</div>
+  ${fArea('연출·행동',base+'.action',2)}
+  <div class="field"><span class="lb">말풍선</span>${linesEditor(cut,i,true)}<p class="hint">원고 위에서 말풍선을 끌어 위치를 옮길 수 있습니다.</p><div class="row"><button type="button" class="btn sm" data-act="autoLayoutCut" data-id="${cut.id}">자동 배치</button></div></div>
+  <details data-keep="cutPrompt" ${S.ui.open.cutPrompt?'open':''}><summary>이미지 프롬프트</summary>
+    <textarea class="in mono" style="margin-top:8px" rows="12" id="cut-prompt" data-bind="${base}.promptOverride" aria-label="이미지 프롬프트">${esc(cut.promptOverride||plan.prompt)}</textarea>
+    <p class="hint" style="margin-top:6px">${cut.promptOverride?'직접 고친 프롬프트를 사용합니다.':'브리프, 캐릭터, 배경, 연출에서 자동으로 조합됩니다. 고치면 이 컷에만 적용됩니다.'}</p>
+    ${cut.promptOverride?`<div class="row" style="margin-top:6px"><button type="button" class="btn sm" data-act="resetPrompt" data-id="${cut.id}">자동 조합으로 되돌리기</button></div>`:''}
+  </details>`;
+}
+VIEWS.webtoon=()=>{
+  const cuts=S.project.scenario.cuts,n=cuts.length;
+  if(!n)return `${head('webtoon')}<div class="empty"><b>그릴 컷이 없습니다</b><p>시나리오 단계에서 콘티를 먼저 만들어 주세요.</p><button type="button" class="btn pri" data-act="go" data-step="scenario">시나리오로 이동</button></div>`;
+  const sel=cutById(S.ui.selCut)||cuts[0],done=cuts.filter(c=>c.image).length;
+  return `${head('webtoon',`<span class="count">${done}/${n}컷 완료</span><button type="button" class="btn gen" data-act="genAllCuts" ${S.batch?'disabled':''}>${done<n?`남은 ${n-done}컷 그리기`:'전체 다시 그리기'}</button>`)}
+  <div class="wt"><div class="strip-wrap"><div class="strip" id="strip">${stripHTML(sel.id)}</div></div>
+    <aside class="card insp" data-scroll="insp" aria-label="선택한 컷">${inspHTML(sel)}</aside></div>`;
+};
+
+/* ── 06 검수·내보내기 ── */
+function reviewChecks(){
+  const p=S.project,b=p.brief,st=pplStats(),cuts=p.scenario.cuts,n=cuts.length,out=[];
+  const d=disclosureText();
+  out.push(d?{state:'ok',title:'광고 표기',msg:`“${d}” 문구가 원고 ${p.export.title?'제목 카드':'맨 위'}${p.export.end?'와 엔드 카드':''}에 들어갑니다.`}
+            :{state:'bad',title:'광고 표기',msg:'광고 표기가 꺼져 있습니다. 대가를 받은 콘텐츠라면 표기가 필요합니다.',go:'brief'});
+  if(n){
+    out.push(st.state==='ok'?{state:'ok',title:'노출 비율',msg:`${st.exp}/${st.n}컷(${st.share}%)으로 목표 ${st.lo}–${st.hi}% 안에 있습니다.`}
+      :{state:'warn',title:'노출 비율',msg:`${st.exp}/${st.n}컷(${st.share}%)으로 목표 ${st.lo}–${st.hi}%를 ${st.state==='low'?'밑돕니다':'넘습니다'}.`,go:'scenario'});
+    const done=cuts.filter(c=>c.image&&imgKind(c.image)!=='demo').length;
+    out.push(done===n?{state:'ok',title:'컷 그림',msg:`${n}컷 모두 그림이 준비됐습니다.`}:{state:'warn',title:'컷 그림',msg:`${n}컷 중 ${done}컷만 완성 그림입니다. 나머지는 러프나 데모 그림으로 내보내집니다.`,go:'webtoon'});
+    const long=cuts.reduce((a,c)=>a+c.lines.filter(l=>l.type!=='sfx'&&l.text.length>32).length,0);
+    out.push(long?{state:'warn',title:'말풍선 길이',msg:`32자를 넘는 말풍선이 ${long}개 있습니다. 모바일에서 읽기 어려울 수 있습니다.`,go:'scenario'}:{state:'ok',title:'말풍선 길이',msg:'모든 말풍선이 32자 이내입니다.'});
+  }else out.push({state:'bad',title:'원고',msg:'아직 시나리오가 없습니다.',go:'scenario'});
+  if(n&&st.exp>0)out.push(b.productImages.length?{state:'ok',title:'제품 참조',msg:'제품 사진을 참조해 그렸습니다. 라벨 글자와 색을 최종 확인해 주세요.'}:{state:'warn',title:'제품 참조',msg:'제품 사진 없이 글 설명만으로 그렸습니다. 실제 패키지와 다를 수 있습니다.',go:'brief'});
+  return out;
+}
+const splitItems=s=>String(s||'').split(/[,\n，、]/).map(x=>x.trim()).filter(Boolean);
+VIEWS.export=()=>{
+  const p=S.project,b=p.brief,ex=p.export,checks=reviewChecks();
+  const manual=[...splitItems(b.must).map(t=>({k:'m:'+t,t:`꼭 넣을 요소: ${t}`})),...splitItems(b.avoid).map(t=>({k:'a:'+t,t:`피해야 할 요소 없음: ${t}`}))];
+  const n=p.scenario.cuts.length;
+  return `${head('export')}
+  <div class="ex"><div class="col">
+    <section class="card sec"><h2>PPL 검수</h2>
+      <ul class="review">${checks.map(c=>`<li class="${c.state}"><i aria-hidden="true"></i><div><b>${c.title}</b><p>${esc(c.msg)}</p></div>${c.go?`<button type="button" class="btn sm" data-act="go" data-step="${c.go}">고치러 가기</button>`:''}</li>`).join('')}</ul>
+      ${manual.length?`<div class="field"><span class="lb">브리프 조건 — 원고를 보며 직접 확인</span><div class="manual">${manual.map(m=>`<label><input type="checkbox" data-manual="${esc(m.k)}" ${ex.manual[m.k]?'checked':''}>${esc(m.t)}</label>`).join('')}</div></div>`:''}
+      <p class="hint">광고 표기 문구와 위치는 게재할 플랫폼의 정책과 표시·광고 관련 기준에 맞는지 마지막에 한 번 더 확인해 주세요.</p>
+    </section>
+    <section class="card sec"><h2>원고 구성</h2>
+      <div class="opt"><span class="lb">제목 카드</span>${seg('project.export.title',[{id:true,ko:'넣기'},{id:false,ko:'빼기'}],{bool:1})}</div>
+      <div class="opt"><span class="lb">엔드 카드 (브랜드·제품)</span>${seg('project.export.end',[{id:true,ko:'넣기'},{id:false,ko:'빼기'}],{bool:1})}</div>
+      <div class="opt"><span class="lb">컷 사이 간격</span>${seg('project.export.gap',[{id:0,ko:'없음'},{id:20,ko:'좁게'},{id:40,ko:'보통'},{id:90,ko:'넓게'}],{num:1})}</div>
+      <div class="opt"><span class="lb">가로 폭</span>${seg('project.export.width',[{id:720,ko:'720px'},{id:1080,ko:'1080px'}],{num:1})}</div>
+    </section>
+    <section class="card sec"><h2>파일로 저장</h2>
+      <div class="row"><button type="button" class="btn pri" data-act="exportPNG" ${n?'':'disabled'}>세로 원고 PNG</button><button type="button" class="btn" data-act="exportScript" ${n?'':'disabled'}>시나리오 텍스트</button><button type="button" class="btn" data-act="saveProject">프로젝트 파일</button></div>
+      <p class="hint">프로젝트 파일에는 설정과 그린 이미지가 모두 들어 있어 ‘불러오기’로 이어서 작업할 수 있습니다. API 키는 저장하지 않습니다.</p>
+    </section>
+  </div>
+  <aside class="card sec"><h2>원고 미리보기</h2><div class="exprev" id="exPrev" data-scroll="exprev"><p>${n?'미리보기를 그리는 중…':'시나리오를 만들면 여기에 원고가 보입니다.'}</p></div><p class="hint" id="exInfo"></p></aside></div>`;
+};
+
+/* ── 대화상자 ── */
+function modelSelect(kind,label){
+  const key=kind+'Model',cur=modelPath(S.settings[key]);
+  const base=S.models?.[kind]?.length?S.models[kind]:(kind==='text'?TEXT_MODELS:IMAGE_MODELS);
+  const opts=[...new Set([cur,...base])].filter(Boolean),custom=S.ui.custom[kind];
+  return `<div class="field"><label class="lb" for="st-${kind}">${label}</label>
+    ${custom?`<div class="rowin"><input class="in mono" id="st-${kind}" data-bind="settings.${key}" value="${esc(cur)}" spellcheck="false"><button type="button" class="btn sm" data-act="customModel" data-kind="${kind}" data-on="0">목록</button></div>`
+      :`<select class="in" id="st-${kind}" data-model="${kind}">${opts.map(o=>`<option value="${esc(o)}" ${o===cur?'selected':''}>${esc(o)}</option>`).join('')}<option value="__custom">직접 입력…</option></select>`}</div>`;
+}
+function modalHTML(){
+  const m=S.ui.modal;if(!m)return '';
+  if(m.type==='confirm')return `<div class="mo-bg" data-act="confirmNo"></div><div class="mo" role="alertdialog" aria-modal="true" aria-labelledby="mo-t"><h2 id="mo-t">${esc(m.title)}</h2><p class="sub">${esc(m.msg)}</p><div class="mo-a"><button type="button" class="btn" data-act="confirmNo">취소</button><button type="button" class="btn pri" data-act="confirmYes">${esc(m.ok||'확인')}</button></div></div>`;
+  const k=S.ui.keyMsg;
+  return `<div class="mo-bg" data-act="closeModal"></div><div class="mo" role="dialog" aria-modal="true" aria-labelledby="mo-t">
+    <h2 id="mo-t">Gemini 연결</h2>
+    <p class="sub">Google AI Studio에서 받은 API 키를 넣으면 설정, 시나리오, 그림을 모두 Gemini로 생성합니다. 키가 없으면 예시 문장과 채색 러프로 흐름만 보여 주는 데모 모드로 움직입니다.</p>
+    <div class="field"><label class="lb" for="st-key">API 키</label>
+      <div class="rowin"><input class="in mono" id="st-key" type="password" data-bind="settings.apiKey" value="${esc(S.settings.apiKey)}" autocomplete="off" spellcheck="false" placeholder="AIza…"><button type="button" class="btn sm" data-act="testKey" ${S.ui.testing?'disabled':''}>${S.ui.testing?'확인하는 중…':'연결 확인'}</button></div>
+      ${k?`<p class="msg ${k.ok?'ok':'bad'}">${esc(k.text)}</p>`:''}
+      <p class="hint">키는 이 탭의 메모리에만 두고 프로젝트 파일에 저장하지 않습니다. 탭을 닫으면 다시 넣어야 합니다.</p></div>
+    <div class="fg2">${modelSelect('text','글 모델 (설정·시나리오)')}${modelSelect('image','그림 모델')}</div>
+    <div class="fg2"><div class="field"><span class="lb">그림 해상도</span>${seg('settings.imageSize',['1K','2K'])}</div><div class="field"><span class="lb">동시에 그리는 수</span>${seg('settings.concurrency',[1,2,3,4],{num:1})}</div></div>
+    <details data-keep="adv" ${S.ui.open.adv?'open':''}><summary>고급</summary><div style="margin-top:10px">${fText('API 주소','settings.base')}<p class="hint" style="margin-top:6px">자체 프록시 서버 주소를 넣으면 브라우저에 키를 두지 않고 운영할 수 있습니다. 여러 사람이 쓰는 서비스로 배포할 때는 이 방식을 권합니다.</p></div></details>
+    <div class="mo-a"><a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">API 키 받으러 가기 ↗</a><span class="sp"></span><button type="button" class="btn pri" data-act="closeModal">완료</button></div>
+  </div>`;
+}
+
+/* ═══ 40 · 렌더링, 동작, 이벤트 ═══ */
+let composing=false,pendingRender=false;
+function captureFocus(){
+  const a=document.activeElement;if(!a||!a.dataset||!a.dataset.bind)return null;
+  let s=null,e=null;try{s=a.selectionStart;e=a.selectionEnd}catch(_){}
+  return {k:a.dataset.bind,s,e};
+}
+function restoreFocus(f){
+  if(!f)return;const el=document.querySelector(`[data-bind="${CSS.escape(f.k)}"]`);if(!el)return;
+  el.focus({preventScroll:true});try{if(f.s!=null)el.setSelectionRange(f.s,f.e)}catch(_){}
+}
+function render(){
+  if(composing){pendingRender=true;return}
+  const f=captureFocus(),sc={};
+  $$('[data-scroll]').forEach(el=>{sc[el.dataset.scroll]=el.scrollTop});
+  $('#rail').innerHTML=railHTML();
+  $('#top').innerHTML=topHTML();
+  const main=$('#main'),changed=main.dataset.step!==S.step;
+  main.innerHTML=(isDemo()?demoBarHTML():'')+VIEWS[S.step]()+footNav();
+  if(changed){main.dataset.step=S.step;main.scrollTop=0}
+  $('#drawer').innerHTML=drawerHTML();
+  $('#modal').innerHTML=modalHTML();
+  $$('[data-scroll]').forEach(el=>{if(sc[el.dataset.scroll]!=null)el.scrollTop=sc[el.dataset.scroll]});
+  restoreFocus(f);
+  if(S.step==='export')refreshExportPreview();
+}
+/* 입력 중에는 전체를 다시 그리지 않고, 입력란이 없는 영역만 갱신합니다 */
+const LIVE={
+  briefSide:()=>briefSideHTML(),
+  pplPanel:()=>pplPanelHTML(),
+  entPrompt:()=>{const d=S.ui.drawer;if(!d)return null;const e=S.project[KIND[d.kind].list].find(x=>x.id===d.id);return e?esc(entPrompt(d.kind,e)):null},
+  panel:d=>{const sel=cutById(S.ui.selCut)||S.project.scenario.cuts[0];return sel&&sel.id===d.id?panelInner(sel):null},
+};
+function live(){
+  $('#rail').innerHTML=railHTML();
+  $$('[data-live]').forEach(el=>{const h=LIVE[el.dataset.live]?.(el.dataset);if(h!=null)el.innerHTML=h});
+}
+function toast(text,type='info'){
+  const el=document.createElement('div');el.className='toast '+type;el.setAttribute('role',type==='error'?'alert':'status');
+  el.innerHTML=`<span>${esc(text)}</span><button type="button" aria-label="닫기">×</button>`;
+  el.querySelector('button').onclick=()=>el.remove();
+  $('#toasts').appendChild(el);setTimeout(()=>el.remove(),type==='error'?9000:4200);
+}
+const fail=e=>{if(e?.name==='AbortError')return;console.error(e);toast(explain(e),'error')};
+const setBusy=(id,label)=>{BUSY.set(id,label)};
+const clearBusy=id=>{BUSY.delete(id)};
+function confirmBox(o){return new Promise(resolve=>{S.ui.modal={type:'confirm',...o,resolve};render()})}
+function closeConfirm(v){const m=S.ui.modal;S.ui.modal=null;render();m?.resolve?.(v)}
+function needBrief(){
+  const miss=briefReady().filter(x=>!x.ok);
+  if(!miss.length)return false;
+  toast(`브리프에서 ${miss.map(m=>m.l).join(', ')}을(를) 먼저 채워 주세요.`,'error');S.step='brief';render();return true;
+}
+function pushVariant(o,id){o.variants=[id,...(o.variants||[]).filter(v=>v!==id)].slice(0,6);o.image=id;sweepImages()}
+
+/* ── 설계(글) ── */
+async function design(kind,skipConfirm){
+  const K=KIND[kind],key='design-'+kind;if(BUSY.has(key))return;
+  if(needBrief())return;
+  const list=S.project[K.list],keep=list.filter(e=>e.locked),want=S.project.brief[K.nKey],n=want-keep.length;
+  if(n<=0){toast(`잠근 ${josa(K.label,'이/가')} 이미 ${keep.length}${K.unit}입니다. 수를 늘리거나 잠금을 풀어 주세요.`,'error');return}
+  const drop=list.length-keep.length;
+  if(!skipConfirm&&drop){
+    const ok=await confirmBox({title:`${josa(K.label,'을/를')} 새로 설계할까요?`,msg:`잠그지 않은 ${K.label} ${drop}${K.unit}이 새 설계로 바뀝니다. 남기고 싶은 항목은 카드의 자물쇠를 먼저 켜 주세요.`,ok:'새로 설계'});
+    if(!ok)return;
+  }
+  setBusy(key,'설계하는 중');render();
+  try{
+    let items;
+    if(isDemo()){
+      const all=await demoDesign(kind,4),used=new Set(keep.map(e=>e.name)),k=keep.length%all.length;
+      items=[...all.slice(k),...all.slice(0,k)].filter(e=>!used.has(e.name)).slice(0,n);
+    }else{
+      const data=await genJSON({system:SYS_DESIGN,prompt:designPrompt(kind,n,keep),schema:kind==='char'?CHAR_SCHEMA:BG_SCHEMA});
+      const raw=(kind==='char'?data.characters:data.backgrounds)||[];
+      items=raw.slice(0,n).map(kind==='char'?normChar:normBg);
+      if(!items.length)throw new ApiError(0,'설계 결과가 비어 있습니다. 다시 시도해 주세요.','empty');
+    }
+    S.project[K.list]=[...keep,...items];
+    if(S.ui.drawer?.kind===kind)S.ui.drawer=null;
+    pruneRefs();sweepImages();markDirty();
+    toast(`${K.label} ${items.length}${K.unit}을 설계했습니다.`,'ok');
+  }catch(e){fail(e)}finally{clearBusy(key);render()}
+}
+async function designAll(){
+  if(needBrief())return;
+  const p=S.project,drop=p.characters.filter(e=>!e.locked).length+p.backgrounds.filter(e=>!e.locked).length;
+  if(drop){
+    const ok=await confirmBox({title:'캐릭터와 배경을 새로 설계할까요?',msg:`잠그지 않은 캐릭터와 배경 ${drop}개가 새 설계로 바뀝니다. 남기고 싶은 항목은 자물쇠를 먼저 켜 주세요.`,ok:'새로 설계'});
+    if(!ok)return;
+  }
+  S.step='chars';render();
+  await design('char',true);
+  await design('bg',true);
+}
+
+/* ── 그림 ── */
+async function drawEnt(kind,id,signal){
+  const K=KIND[kind],e=S.project[K.list].find(x=>x.id===id);if(!e||BUSY.has(id))return;
+  setBusy(id,'그리는 중');render();
+  try{
+    let img;
+    if(isDemo()){await sleep(500+Math.random()*500,signal);img=putSVG(kind==='char'?charSVG(e,'demo',uid()):bgSVG(e,'demo',uid()),'demo')}
+    else{
+      const refs=[];let prompt=entPrompt(kind,e);
+      if(e.image&&imgKind(e.image)==='upload'){
+        refs.push({label:kind==='char'?'reference photo or drawing of this character':'reference photo or drawing of this location',data:await refPart(e.image)});
+        prompt+=kind==='char'?'\nBase the face, hair and outfit on Image 1, redrawn in the art style above.':'\nBase the place on Image 1, redrawn in the art style above, with all people removed.';
+      }
+      img=await genImage({prompt,refs,ratio:K.ratio,signal});
+    }
+    pushVariant(e,img);markDirty();
+  }finally{clearBusy(id);render()}
+}
+async function drawCut(id,signal){
+  const cut=cutById(id);if(!cut||BUSY.has(id))return;
+  setBusy(id,'그리는 중');render();
+  try{
+    let img;
+    if(isDemo()){await sleep(500+Math.random()*600,signal);img=putSVG(cutSVG(cut,'demo',uid()),'demo')}
+    else{
+      const plan=cutPlan(cut),refs=[];
+      for(const r of plan.refs)refs.push({label:r.label,data:await refPart(r.img)});
+      img=await genImage({prompt:cut.promptOverride.trim()||plan.prompt,refs,ratio:S.project.brief.ratio,signal});
+    }
+    pushVariant(cut,img);markDirty();
+  }finally{clearBusy(id);render()}
+}
+async function runBatch(label,ids,worker){
+  if(S.batch||!ids.length)return;
+  const ctrl=new AbortController();let failed=0,fatal=null;
+  S.batch={label,done:0,total:ids.length,ctrl};render();
+  const q=[...ids],conc=isDemo()?3:clamp(S.settings.concurrency,1,4);
+  const lane=async()=>{
+    while(q.length&&!ctrl.signal.aborted){
+      const id=q.shift();
+      try{await worker(id,ctrl.signal)}
+      catch(e){if(e.name!=='AbortError'){failed++;console.error(e);if(isFatal(e)){fatal=fatal||e;ctrl.abort()}else if(failed===1)toast(explain(e),'error')}}
+      if(S.batch){S.batch.done++;render()}
+    }
+  };
+  await Promise.all(Array.from({length:Math.min(conc,ids.length)},lane));
+  const stopped=ctrl.signal.aborted;S.batch=null;render();
+  if(fatal)toast(explain(fatal),'error');
+  else if(stopped)toast('생성을 중단했습니다. 이미 그린 그림은 남아 있습니다.');
+  else toast(failed?`${label}: ${ids.length-failed}개 완료, ${failed}개 실패. 실패한 항목은 다시 시도해 주세요.`:`${label} ${ids.length}개를 모두 마쳤습니다.`,failed?'error':'ok');
+}
+
+/* ── 시나리오 ── */
+async function genScenario(){
+  if(BUSY.has('scenario')||needBrief())return;
+  const p=S.project;
+  if(!p.characters.length||!p.backgrounds.length){toast('캐릭터와 배경을 먼저 하나 이상 만들어 주세요.','error');return}
+  if(p.scenario.cuts.length){
+    const ok=await confirmBox({title:'시나리오를 다시 쓸까요?',msg:`지금의 ${p.scenario.cuts.length}컷과 컷에 그린 그림이 새 시나리오로 바뀝니다.`,ok:'다시 쓰기'});
+    if(!ok)return;
+  }
+  setBusy('scenario','쓰는 중');render();
+  try{
+    let data;
+    if(isDemo()){await sleep(900);data=demoScenarioRaw()}
+    else data=await genJSON({system:SYS_WRITER,prompt:scenarioPrompt(),schema:SCENARIO_SCHEMA});
+    const cuts=(data.cuts||[]).map(normCut);
+    if(!cuts.length)throw new ApiError(0,'시나리오에 컷이 없습니다. 다시 시도해 주세요.','empty');
+    p.scenario={title:data.title||p.name,logline:data.logline||'',synopsis:data.synopsis||'',cuts};
+    S.ui.selCut=cuts[0].id;sweepImages();markDirty();
+    toast(`${cuts.length}컷 시나리오를 썼습니다.`,'ok');
+  }catch(e){fail(e)}finally{clearBusy('scenario');render()}
+}
+async function rewriteCut(i){
+  const cuts=S.project.scenario.cuts,cut=cuts[i];if(!cut)return;
+  const instr=(S.ui.rw[cut.id]||'').trim(),key='rw-'+cut.id;
+  if(!instr){toast('이 컷을 어떻게 고칠지 한 줄로 적어 주세요.','error');return}
+  if(BUSY.has(key))return;
+  setBusy(key,'고치는 중');render();
+  try{
+    let next;
+    if(isDemo()){await sleep(700);next={...cut,action:`${cut.action} (${instr})`,lines:cut.lines.map(l=>({...l}))};toast('데모 모드에서는 지시를 연출 문장 끝에 붙이기만 합니다.')}
+    else{
+      const raw=await genJSON({system:SYS_WRITER,prompt:rewritePrompt(cut,instr),schema:CUT_ITEM});
+      next={...normCut(raw.cut||raw),id:cut.id,image:cut.image,variants:cut.variants};
+    }
+    const at=cuts.findIndex(c=>c.id===cut.id);
+    if(at>=0){cuts[at]=next;S.ui.rw[cut.id]='';markDirty()}
+  }catch(e){fail(e)}finally{clearBusy(key);render()}
+}
+
+/* ── 버튼 동작 ── */
+const ACT={
+  go:d=>{S.step=d.step;S.ui.drawer=null;render()},
+  setVal:d=>{let v=d.v;if(d.num!=null)v=Number(v);if(d.bool!=null)v=v==='true';setPath(S,d.path,v);if(d.path.startsWith('project'))markDirty();render()},
+  toggleIn:d=>{
+    const cur=getPath(S,d.path);
+    if(!Array.isArray(cur))setPath(S,d.path,d.v);
+    else{
+      const i=cur.indexOf(d.v),max=+d.max||0;
+      if(i>=0)cur.splice(i,1);else{if(max&&cur.length>=max)cur.shift();cur.push(d.v)}
+    }
+    markDirty();render();
+  },
+  openSettings:()=>{S.ui.modal={type:'settings'};render();$('#st-key')?.focus()},
+  closeModal:()=>{S.ui.modal=null;render()},
+  confirmYes:()=>closeConfirm(true),
+  confirmNo:()=>closeConfirm(false),
+  customModel:d=>{S.ui.custom[d.kind]=d.on!=='0';render()},
+  testKey:async()=>{
+    if(!S.settings.apiKey.trim()){S.ui.keyMsg={ok:false,text:'API 키를 먼저 넣어 주세요.'};render();return}
+    S.ui.testing=true;S.ui.keyMsg=null;render();
+    try{
+      const m=await listModels();S.models=m;
+      const warn=[];
+      if(m.text.length&&!m.text.includes(modelPath(S.settings.textModel)))warn.push('글 모델');
+      if(m.image.length&&!m.image.includes(modelPath(S.settings.imageModel)))warn.push('그림 모델');
+      S.ui.keyMsg={ok:!warn.length,text:warn.length?`연결됐지만 지금 고른 ${warn.join(', ')}이 이 키의 목록에 없습니다. 아래에서 다시 골라 주세요.`:`연결됐습니다. 이 키로 쓸 수 있는 글 모델 ${m.text.length}개, 그림 모델 ${m.image.length}개를 불러왔습니다.`};
+    }catch(e){S.ui.keyMsg={ok:false,text:explain(e)}}
+    S.ui.testing=false;render();
+  },
+  delProductImg:d=>{S.project.brief.productImages.splice(+d.i,1);markDirty();render()},
+  designAll,
+  design:d=>design(d.kind),
+  addEnt:d=>{const K=KIND[d.kind],e=d.kind==='char'?newChar({name:'새 캐릭터'}):newBg({name:'새 배경'});S.project[K.list].push(e);S.ui.drawer={kind:d.kind,id:e.id};markDirty();render()},
+  editEnt:d=>{S.ui.drawer={kind:d.kind,id:d.id};render()},
+  closeDrawer:()=>{S.ui.drawer=null;render()},
+  lockEnt:d=>{const e=S.project[KIND[d.kind].list].find(x=>x.id===d.id);if(e){e.locked=!e.locked;markDirty();render()}},
+  delEnt:async d=>{
+    const K=KIND[d.kind],e=S.project[K.list].find(x=>x.id===d.id);if(!e)return;
+    const ok=await confirmBox({title:`‘${e.name}’ ${josa(K.label,'을/를')} 삭제할까요?`,msg:'시나리오에서 이 항목을 쓰던 컷은 비워집니다.',ok:'삭제'});if(!ok)return;
+    S.project[K.list]=S.project[K.list].filter(x=>x.id!==d.id);S.ui.drawer=null;pruneRefs();markDirty();render();
+  },
+  pickVariant:d=>{const e=S.project[KIND[d.kind].list].find(x=>x.id===d.id);if(e){e.image=d.img;markDirty();render()}},
+  genEnt:d=>drawEnt(d.kind,d.id).catch(fail),
+  genAllEnt:d=>{
+    const K=KIND[d.kind],list=S.project[K.list],miss=list.filter(e=>!e.image);
+    runBatch(`${K.label} ${K.img}`,(miss.length?miss:list).map(e=>e.id),(id,sig)=>drawEnt(d.kind,id,sig));
+  },
+  genScenario,
+  addCut:()=>{const c=newCut();S.project.scenario.cuts.push(c);markDirty();render();document.getElementById('cut-'+c.id)?.scrollIntoView({block:'center'})},
+  delCut:d=>{const cuts=S.project.scenario.cuts;cuts.splice(+d.i,1);markDirty();render()},
+  dupCut:d=>{const cuts=S.project.scenario.cuts,src=cuts[+d.i];cuts.splice(+d.i+1,0,{...structuredClone(src),id:uid('k'),lines:src.lines.map(l=>({...l,id:uid('l')})),image:null,variants:[]});markDirty();render()},
+  moveCut:d=>{const cuts=S.project.scenario.cuts,i=+d.i,j=i+ +d.d;if(j<0||j>=cuts.length)return;[cuts[i],cuts[j]]=[cuts[j],cuts[i]];markDirty();render()},
+  toggleCutChar:d=>{const c=S.project.scenario.cuts[+d.i],k=c.chars.indexOf(d.id);if(k>=0)c.chars.splice(k,1);else if(c.chars.length<3)c.chars.push(d.id);else{toast('한 컷에는 캐릭터를 3명까지 넣을 수 있습니다.','error');return}markDirty();render()},
+  setPpl:d=>{const c=S.project.scenario.cuts[+d.i];c.ppl=+d.l;if(!c.ppl)c.pplNote='';markDirty();render()},
+  addLine:d=>{const c=S.project.scenario.cuts[+d.ci],k=c.lines.filter(l=>l.type!=='sfx'&&l.type!=='narr').length;c.lines.push(newLine({who:c.chars[0]||'',x:k%2?70:30,y:clamp(15+k*17,10,84),tail:k%2?'right':'left'}));markDirty();render();$(`[data-bind="project.scenario.cuts.${d.ci}.lines.${c.lines.length-1}.text"]`)?.focus()},
+  delLine:d=>{S.project.scenario.cuts[+d.ci].lines.splice(+d.li,1);markDirty();render()},
+  cycleTail:d=>{const l=S.project.scenario.cuts[+d.ci].lines[+d.li];l.tail={left:'right',right:'none',none:'left'}[l.tail]||'left';markDirty();render()},
+  rewriteCut:d=>rewriteCut(+d.i),
+  scrollCut:d=>{document.getElementById('cut-'+d.id)?.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth',block:'start'})},
+  selCut:d=>{if(S.ui.selCut!==d.id){S.ui.selCut=d.id;render()}},
+  genCut:d=>drawCut(d.id).catch(fail),
+  genAllCuts:async()=>{
+    const cuts=S.project.scenario.cuts,miss=cuts.filter(c=>!c.image);
+    if(!miss.length){const ok=await confirmBox({title:'모든 컷을 다시 그릴까요?',msg:`${cuts.length}컷을 처음부터 다시 그립니다. 이전 그림은 컷마다 ‘지금까지 그린 그림’에 남습니다.`,ok:'다시 그리기'});if(!ok)return}
+    runBatch('컷 그림',(miss.length?miss:cuts).map(c=>c.id),drawCut);
+  },
+  cancelBatch:()=>{S.batch?.ctrl.abort()},
+  pickCutVariant:d=>{const c=cutById(d.id);if(c){c.image=d.img;markDirty();render()}},
+  autoLayoutCut:d=>{const c=cutById(d.id);if(c){autoLayout(c);markDirty();render()}},
+  resetPrompt:d=>{const c=cutById(d.id);if(c){c.promptOverride='';markDirty();render()}},
+  newProject:async()=>{
+    const ok=await confirmBox({title:'새 프로젝트를 시작할까요?',msg:'지금 화면의 내용은 사라집니다. 이어서 쓸 내용이라면 먼저 ‘프로젝트 저장’을 눌러 주세요.',ok:'새로 시작'});if(!ok)return;
+    S.project=blankProject();S.step='brief';S.ui.drawer=null;S.ui.selCut=null;S.ui.rw={};S.ui.req={char:'',bg:'',scenario:''};S.dirty=false;render();$('#f-project-brief-brand')?.focus();
+  },
+  saveProject:()=>saveProject().catch(fail),
+  exportPNG:()=>exportPNG().catch(fail),
+  exportScript:()=>exportScript(),
+};
+
+/* ── 이벤트 ── */
+function onFile(t){
+  const files=[...t.files];t.value='';if(!files.length)return;
+  const kind=t.dataset.file,images=files.filter(f=>f.type.startsWith('image/'));
+  if(kind==='project'){loadProject(files[0]).catch(e=>toast('프로젝트 파일을 읽지 못했습니다. 컷인 스튜디오에서 저장한 .json 파일인지 확인해 주세요.','error'));return}
+  if(!images.length){toast('이미지 파일을 골라 주세요.','error');return}
+  if(kind==='product'){const list=S.project.brief.productImages;for(const f of images.slice(0,3-list.length))list.push(putBlob(f,'upload'))}
+  if(kind==='ent'){const e=S.project[KIND[t.dataset.kind].list].find(x=>x.id===t.dataset.id);if(e)pushVariant(e,putBlob(images[0],'upload'))}
+  if(kind==='cut'){const c=cutById(t.dataset.id);if(c)pushVariant(c,putBlob(images[0],'upload'))}
+  markDirty();render();
+}
+function bindEvents(){
+  document.addEventListener('click',e=>{
+    const t=e.target.closest('[data-act]');if(!t||t.disabled)return;
+    const fn=ACT[t.dataset.act];if(fn)fn(t.dataset,t,e);
+  });
+  document.addEventListener('input',e=>{
+    const t=e.target;if(!t.dataset||!t.dataset.bind||t.tagName==='SELECT')return;
+    setPath(S,t.dataset.bind,t.value);
+    if(t.dataset.bind.startsWith('project'))markDirty();
+    if(t.dataset.bind==='settings.apiKey')S.ui.keyMsg=null;
+    live();
+  });
+  document.addEventListener('change',e=>{
+    const t=e.target;
+    if(t.type==='file'){onFile(t);return}
+    if(t.dataset.manual){S.project.export.manual[t.dataset.manual]=t.checked;markDirty();return}
+    if(t.dataset.model){if(t.value==='__custom')S.ui.custom[t.dataset.model]=true;else S.settings[t.dataset.model+'Model']=t.value;render();return}
+    if(t.tagName==='SELECT'&&t.dataset.bind){
+      setPath(S,t.dataset.bind,t.value);
+      const m=/^project\.scenario\.cuts\.(\d+)\.lines\.(\d+)\.type$/.exec(t.dataset.bind);
+      if(m){const ln=S.project.scenario.cuts[+m[1]].lines[+m[2]];if(ln.type==='narr'||ln.type==='sfx'){ln.who='';ln.tail='none';ln.w=ln.type==='sfx'?70:60}else{ln.w=46;if(ln.tail==='none')ln.tail='left'}}
+      markDirty();render();return;
+    }
+  });
+  document.addEventListener('compositionstart',()=>{composing=true});
+  document.addEventListener('compositionend',()=>{composing=false;if(pendingRender){pendingRender=false;render()}});
+  document.addEventListener('toggle',e=>{const k=e.target.dataset?.keep;if(k)S.ui.open[k]=e.target.open},true);
+  document.addEventListener('keydown',e=>{
+    if((e.key==='Enter'||e.key===' ')&&e.target.matches?.('label[tabindex]')){e.preventDefault();e.target.querySelector('input[type=file]')?.click();return}
+    if(e.key!=='Escape')return;
+    if(S.ui.modal){S.ui.modal.type==='confirm'?closeConfirm(false):ACT.closeModal()}
+    else if(S.ui.drawer)ACT.closeDrawer();
+  });
+  /* 말풍선 끌기 */
+  let drag=null;
+  document.addEventListener('pointerdown',e=>{
+    const b=e.target.closest('.strip .bub');if(!b||e.button!==0)return;
+    const pr=b.closest('.panel').getBoundingClientRect(),br=b.getBoundingClientRect();
+    drag={b,pr,ox:e.clientX-(br.left+br.width/2),oy:e.clientY-(br.top+br.height/2),sx:e.clientX,sy:e.clientY,moved:false};
+  });
+  document.addEventListener('pointermove',e=>{
+    if(!drag)return;
+    if(!drag.moved&&Math.hypot(e.clientX-drag.sx,e.clientY-drag.sy)<4)return;
+    drag.moved=true;e.preventDefault();
+    drag.x=clamp((e.clientX-drag.ox-drag.pr.left)/drag.pr.width*100,3,97);
+    drag.y=clamp((e.clientY-drag.oy-drag.pr.top)/drag.pr.height*100,3,97);
+    drag.b.style.left=drag.x+'%';drag.b.style.top=drag.y+'%';
+  });
+  const end=()=>{
+    if(drag?.moved){const ln=cutById(drag.b.dataset.cut)?.lines.find(l=>l.id===drag.b.dataset.line);if(ln){ln.x=Math.round(drag.x*10)/10;ln.y=Math.round(drag.y*10)/10;markDirty()}}
+    drag=null;
+  };
+  document.addEventListener('pointerup',end);
+  document.addEventListener('pointercancel',end);
+  window.addEventListener('beforeunload',e=>{if(S.dirty){e.preventDefault();e.returnValue=''}});
+}
+
+/* ═══ 50 · 원고 합성(canvas), 파일 저장·불러오기, 시작 ═══ */
+const CFONT={
+  bubble:'"Gowun Dodum","IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif',
+  hand:'"Gaegu","Gowun Dodum","Apple SD Gothic Neo",sans-serif',
+  display:'"Black Han Sans","Display Fallback","Apple SD Gothic Neo","Malgun Gothic",sans-serif',
+  body:'"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif',
+  mono:'"IBM Plex Mono",ui-monospace,Menlo,monospace',
+};
+const INK='#15161C';
+function wrapText(x,text,maxW){
+  const out=[];let wrapped=false;const fits=s=>x.measureText(s).width<=maxW;
+  for(const para of String(text).split('\n')){
+    let line='';
+    for(const word of para.split(' ')){
+      const cand=line?line+' '+word:word;
+      if(fits(cand)){line=cand;continue}
+      if(line){out.push(line);wrapped=true;line=''}
+      if(fits(word)){line=word;continue}
+      let cur='';for(const ch of word){if(cur&&!fits(cur+ch)){out.push(cur);wrapped=true;cur=ch}else cur+=ch}
+      line=cur;
+    }
+    out.push(line);
+  }
+  return {lines:out,wrapped};
+}
+async function fontsReady(text){
+  if(!document.fonts?.load)return;
+  const sample=(text||'')+'가나다 ABC 123';
+  await Promise.all([`400 20px ${CFONT.bubble}`,`700 20px ${CFONT.hand}`,`400 20px ${CFONT.display}`,`500 20px ${CFONT.body}`,`600 20px ${CFONT.body}`,`600 20px ${CFONT.mono}`].map(f=>document.fonts.load(f,sample).catch(()=>{})));
+}
+function drawCover(x,im,X,Y,W,H){
+  const iw=im.naturalWidth||im.width,ih=im.naturalHeight||im.height;
+  if(!iw||!ih)return;
+  const s=Math.max(W/iw,H/ih),sw=W/s,sh=H/s;
+  x.drawImage(im,(iw-sw)/2,(ih-sh)/2,sw,sh,X,Y,W,H);
+}
+function drawContain(x,im,X,Y,W,H){
+  const iw=im.naturalWidth||im.width,ih=im.naturalHeight||im.height;if(!iw||!ih)return;
+  const s=Math.min(W/iw,H/ih),w=iw*s,h=ih*s;x.drawImage(im,X+(W-w)/2,Y+(H-h)/2,w,h);
+}
+/* 화면의 말풍선(.bub)과 같은 수치로 그립니다 */
+function drawBubble(x,ln,PX,PY,W,PH){
+  if(!String(ln.text).trim())return;
+  const t=BUB[ln.type]?ln.type:'say',B=BUB[t],fs=W*B.fs/100,lh=fs*1.35,sw=Math.max(1.5,W*.0045);
+  x.save();x.beginPath();x.rect(PX,PY,W,PH);x.clip();
+  x.font=`${B.weight} ${fs}px ${CFONT[B.font]}`;x.textAlign='center';x.textBaseline='middle';
+  const padX=B.px*fs,padY=B.py*fs,maxBox=W*ln.w/100;
+  const {lines,wrapped}=wrapText(x,ln.text,Math.max(fs,maxBox-2*padX));
+  const tw=Math.max(...lines.map(l=>x.measureText(l).width));
+  const bw=wrapped?maxBox:tw+2*padX,bh=lines.length*lh+2*padY;
+  const cx=PX+W*ln.x/100,cy=PY+PH*ln.y/100,L=cx-bw/2,T=cy-bh/2;
+  x.lineJoin='round';x.lineWidth=sw;x.strokeStyle=INK;x.fillStyle='#fff';
+  if(t==='sfx'){
+    x.translate(cx,cy);x.rotate(-6*Math.PI/180);
+    x.lineWidth=fs*.18;x.strokeStyle='#fff';x.fillStyle=INK;
+    lines.forEach((l,i)=>{const y=(i-(lines.length-1)/2)*lh;x.strokeText(l,0,y);x.fillText(l,0,y)});
+    x.restore();return;
+  }
+  const dir=ln.tail==='right'?'right':ln.tail==='left'?'left':'';
+  const u=fs*.06; // 꼬리 viewBox 한 칸
+  const tx=dir==='left'?L+bw*.34:L+bw-bw*.34-fs*1.2,ty=T+bh-fs*.30;
+  const tp=d=>{const p=new Path2D();const m=d.match(/[MLZ][^MLZ]*/g)||[];for(const seg of m){const c=seg[0],nums=seg.slice(1).trim().split(/[\s,]+/).map(Number);if(c==='M')p.moveTo(tx+nums[0]*u,ty+nums[1]*u);else if(c==='L')p.lineTo(tx+nums[0]*u,ty+nums[1]*u);else p.closePath()}return p};
+  if(dir&&t==='say'){const p=tp(TAIL[dir].line);x.fill(p);x.stroke(p)}
+  if(dir&&t==='think'){
+    const bx=dir==='left'?L+bw*.34:L+bw*.66,by=T+bh;
+    for(const [dx,dy,r] of [[.38,.30,.28],[dir==='left'?.17:.63,.79,.17]]){x.beginPath();x.arc(bx+dx*fs,by+dy*fs,Math.max(1,r*fs-sw/2),0,Math.PI*2);x.fill();x.stroke()}
+  }
+  x.beginPath();
+  if(t==='narr')x.rect(L,T,bw,bh);
+  else if(t==='shout'){BURST.forEach(([a,b],i)=>{const X=L+bw*a/100,Y=T+bh*b/100;i?x.lineTo(X,Y):x.moveTo(X,Y)});x.closePath()}
+  else x.ellipse(cx,cy,bw*.495,bh*.495,0,0,Math.PI*2);
+  if(t==='think')x.setLineDash([W*.016,W*.011]);
+  x.fill();x.stroke();x.setLineDash([]);
+  if(dir&&t==='say'){x.fillStyle='#fff';x.fill(tp(TAIL[dir].patch))}
+  x.fillStyle=INK;
+  lines.forEach((l,i)=>x.fillText(l,cx,T+padY+lh*(i+.5)));
+  x.restore();
+}
+function drawTitleCard(x,W,H,disc){
+  const p=S.project,m=W*.055;
+  x.fillStyle='#fff';x.fillRect(0,0,W,H);
+  x.textAlign='left';x.textBaseline='alphabetic';
+  if(disc){
+    x.font=`600 ${W*.029}px ${CFONT.body}`;const tw=x.measureText(disc).width,bw=tw+W*.036+W*.007,bh=W*.029+W*.022+W*.007;
+    x.lineWidth=W*.0035;x.strokeStyle=INK;x.strokeRect(m+W*.00175,W*.05+W*.00175,bw-W*.0035,bh-W*.0035);
+    x.fillStyle=INK;x.textBaseline='middle';x.fillText(disc,m+W*.018+W*.0035,W*.05+bh/2);x.textBaseline='alphabetic';
+  }
+  const title=p.scenario.title||p.name,log=p.scenario.logline||'';
+  x.font=`500 ${W*.033}px ${CFONT.body}`;const ll=log?wrapText(x,log,W-2*m).lines:[];
+  x.font=`400 ${W*.078}px ${CFONT.display}`;const tl=wrapText(x,title,W-2*m).lines;
+  let y=H-W*.05-W*.0045;x.textBaseline='middle';
+  x.fillStyle='#3C3F4C';x.font=`500 ${W*.033}px ${CFONT.body}`;
+  for(let i=ll.length-1;i>=0;i--){const lh=W*.033*1.4;x.fillText(ll[i],m,y-lh/2);y-=lh}
+  if(ll.length)y-=W*.016;
+  x.fillStyle=INK;x.font=`400 ${W*.078}px ${CFONT.display}`;
+  for(let i=tl.length-1;i>=0;i--){const lh=W*.078*1.14;x.fillText(tl[i],m,y-lh/2);y-=lh}
+  x.fillRect(0,H-W*.0045,W,W*.0045);
+}
+async function drawEndCard(x,Y,W,H,disc){
+  const b=S.project.brief,m=W*.055;
+  x.fillStyle='#fff';x.fillRect(0,Y,W,H);x.fillStyle=INK;x.fillRect(0,Y,W,W*.0045);
+  x.textAlign='left';x.textBaseline='middle';
+  let y=Y+W*.06+W*.0045;
+  const block=(text,font,fs,lhK,color)=>{x.font=font;x.fillStyle=color;for(const l of wrapText(x,text,W*.54).lines){const lh=fs*lhK;x.fillText(l,m,y+lh/2);y+=lh}};
+  block('제작 지원',`600 ${W*.025}px ${CFONT.mono}`,W*.025,1,'#6B7080');y+=W*.02;
+  block(b.brand||'브랜드',`400 ${W*.064}px ${CFONT.display}`,W*.064,1.15,INK);y+=W*.014;
+  if(b.product){block(b.product,`600 ${W*.036}px ${CFONT.body}`,W*.036,1.3,INK);y+=W*.016}
+  if(b.usp)block(b.usp,`400 ${W*.031}px ${CFONT.body}`,W*.031,1.45,'#3C3F4C');
+  const pid=b.productImages[0];
+  if(pid&&IMG.has(pid)){try{drawContain(x,await loadImage(imgURL(pid)),W-m-W*.3,Y+W*.06+W*.0045,W*.3,H-W*.12-W*.0045)}catch(_){}}
+  if(disc){x.fillStyle='#6B7080';x.font=`500 ${W*.025}px ${CFONT.body}`;x.fillText(disc,m,Y+H-W*.045-W*.0125)}
+}
+async function buildStrip(width){
+  const p=S.project,ex=p.export,cuts=p.scenario.cuts,n=cuts.length,disc=disclosureText();
+  const [rw,rh]=p.brief.ratio.split(':').map(Number);
+  const measure=W=>{const ph=Math.round(W*rh/rw),gap=Math.round(ex.gap*W/720),th=ex.title?Math.round(W*5/12):(disc?Math.round(W*.075):0),eh=ex.end?Math.round(W/2):0;
+    return {W,ph,gap,th,eh,H:th+(ex.title&&n?gap:0)+n*ph+Math.max(0,n-1)*gap+(ex.end&&n?gap:0)+eh}};
+  let m=measure(width);
+  if(m.H>30000)m=measure(Math.floor(width*30000/m.H));
+  const {W,ph,gap,th,eh,H}=m;
+  await fontsReady([p.scenario.title,p.scenario.logline,p.brief.brand,p.brief.product,p.brief.usp,disc,...cuts.flatMap(c=>c.lines.map(l=>l.text))].join(' '));
+  const c=document.createElement('canvas');c.width=W;c.height=Math.max(1,H);
+  const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,W,H);
+  let y=0;
+  if(ex.title){drawTitleCard(x,W,th,disc);y=th+(n?gap:0)}
+  else if(disc){x.fillStyle=INK;x.font=`600 ${W*.027}px ${CFONT.body}`;x.textAlign='left';x.textBaseline='middle';x.fillText(disc,W*.055,th/2);x.fillRect(0,th-W*.003,W,W*.003);y=th}
+  for(let i=0;i<n;i++){
+    const cut=cuts[i];
+    try{drawCover(x,await loadImage(cut.image&&IMG.has(cut.image)?imgURL(cut.image):svgDataURL(cutSVG(cut))),0,y,W,ph)}catch(_){}
+    for(const ln of cut.lines)drawBubble(x,ln,0,y,W,ph);
+    y+=ph+(i<n-1?gap:0);
+  }
+  if(ex.end)await drawEndCard(x,y+(n?gap:0),W,eh,disc);
+  return c;
+}
+let prevToken=0;
+async function refreshExportPreview(){
+  const box=$('#exPrev');if(!box||!S.project.scenario.cuts.length)return;
+  const token=++prevToken;
+  try{
+    const c=await buildStrip(720);
+    if(token!==prevToken||!document.body.contains(box))return;
+    const top=box.scrollTop;box.replaceChildren(c);box.scrollTop=top;
+    const full=S.project.export.width,info=$('#exInfo');
+    if(info)info.textContent=`저장 크기 약 ${full} × ${Math.round(c.height*full/720)}px (미리보기는 720px 폭으로 그렸습니다)`;
+  }catch(e){if(token===prevToken)box.innerHTML='<p>미리보기를 그리지 못했습니다.</p>';console.error(e)}
+}
+const safeName=s=>(String(s).trim().replace(/[\\/:*?"<>|]+/g,'_').slice(0,60)||'cutin');
+function download(blob,name){
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(a.href),8000);
+}
+async function exportPNG(){
+  toast('원고를 합치는 중입니다…');
+  const c=await buildStrip(S.project.export.width);
+  const blob=await new Promise(res=>c.toBlob(res,'image/png'));
+  if(!blob)throw new ApiError(0,'원고가 너무 커서 이미지로 만들지 못했습니다. 가로 폭을 720px로 줄여 주세요.','empty');
+  download(blob,safeName(S.project.scenario.title||S.project.name)+'.png');
+  toast(`${c.width} × ${c.height}px PNG로 저장했습니다.`,'ok');
+}
+function scriptText(){
+  const p=S.project,b=p.brief,sc=p.scenario,T={say:'',think:'(생각) ',shout:'(외침) '};
+  const out=[`제목: ${sc.title}`,`로그라인: ${sc.logline}`,`시놉시스: ${sc.synopsis}`,`브랜드·제품: ${b.brand} ${b.product}`,`광고 표기: ${disclosureText()||'없음'}`,''];
+  sc.cuts.forEach((c,i)=>{
+    out.push(`[C${pad2(i+1)}] 배경: ${bgById(c.bg)?.name||'-'} | 샷: ${shotOf(c.shot).ko} | 등장: ${c.chars.map(id=>charById(id)?.name).filter(Boolean).join(', ')||'-'}`);
+    out.push(`연출: ${c.action}`);
+    for(const l of c.lines){
+      if(l.type==='narr')out.push(`[내레이션] ${l.text}`);
+      else if(l.type==='sfx')out.push(`[효과음] ${l.text}`);
+      else out.push(`${T[l.type]}${charById(l.who)?.name||'?'}: ${l.text}`);
+    }
+    out.push(`PPL: ${PPL[c.ppl].ko}${c.pplNote?' — '+c.pplNote:''}`,'');
+  });
+  return out.join('\n');
+}
+function exportScript(){download(new Blob([scriptText()],{type:'text/plain;charset=utf-8'}),safeName(S.project.scenario.title||S.project.name)+'_시나리오.txt');toast('시나리오를 텍스트 파일로 저장했습니다.','ok')}
+async function saveProject(){
+  /* 파일 크기를 줄이려고 지금 선택된 그림만 담습니다 */
+  const p=structuredClone(S.project),images={};
+  for(const e of [...p.characters,...p.backgrounds,...p.scenario.cuts])e.variants=e.image&&IMG.has(e.image)?[e.image]:[];
+  for(const id of usedImages(p)){const it=IMG.get(id);if(it)images[id]={kind:it.kind,data:await blobToDataURL(it.blob)}}
+  download(new Blob([JSON.stringify({app:'cutin-studio',v:1,project:p,images})],{type:'application/json'}),safeName(p.name)+'.cutin.json');
+  S.dirty=false;toast('프로젝트 파일을 저장했습니다.','ok');
+}
+async function loadProject(file){
+  const data=JSON.parse(await file.text());
+  if(data?.app!=='cutin-studio'||!data.project)throw new Error('format');
+  for(const [id,im] of Object.entries(data.images||{})){
+    const res=await fetch(im.data);putBlob(await res.blob(),im.kind||'gen',id);
+  }
+  const base=blankProject(),p=data.project;
+  S.project={...base,...p,brief:{...base.brief,...p.brief},scenario:{...base.scenario,...p.scenario},export:{...base.export,...p.export}};
+  const has=id=>id&&IMG.has(id);
+  S.project.brief.productImages=S.project.brief.productImages.filter(has);
+  for(const e of [...S.project.characters,...S.project.backgrounds,...S.project.scenario.cuts]){e.variants=(e.variants||[]).filter(has);if(!has(e.image))e.image=e.variants[0]||null}
+  pruneRefs();S.step='brief';S.ui.drawer=null;S.ui.selCut=null;S.dirty=false;render();
+  toast(`‘${S.project.name}’ 프로젝트를 불러왔습니다.`,'ok');
+}
+
+/* ── 예시 프로젝트로 시작 ── */
+function sampleProject(){
+  const p=blankProject();
+  Object.assign(p,{name:'유자톡 × 오피스 로맨스',sample:true});
+  Object.assign(p.brief,{brand:'새벽상회',product:'유자톡',category:'식음료',target:'20대 직장인',
+    usp:'제주 유자 과즙 12%, 제로 슈거. 지친 오후를 깨우는 한 캔.',
+    desc:'노란 슬림 캔에 유자 단면 그림. 강한 탄산과 상큼한 향이 특징인 스파클링 음료.',
+    must:'캔 로고가 정면으로 보이는 컷, 마시는 장면 한 번',avoid:'음주를 연상시키는 장면, 과장된 효능 표현',
+    prompt:'야근에 지친 신입 디자이너가 무뚝뚝한 선배와 편의점 앞에서 우연히 마주치며 가까워지는 오피스 로맨스. 마지막은 설레는 여운으로 끝난다.',
+    genres:['로맨스','오피스'],tones:['설렘','유쾌'],pplLevel:3,pplModes:['use','talk'],cuts:8});
+  S.project=p;
+  p.characters=demoChars().slice(0,2).map(normChar);
+  p.backgrounds=demoBgs().slice(0,2).map(normBg);
+  const raw=demoScenarioRaw();
+  p.scenario={title:raw.title,logline:raw.logline,synopsis:raw.synopsis,cuts:raw.cuts.map(normCut)};
+  S.ui.selCut=p.scenario.cuts[0].id;
+  return p;
+}
+function boot(){
+  sampleProject();
+  bindEvents();
+  render();
+  document.fonts?.ready?.then(()=>{if(S.step==='export')refreshExportPreview()});
+}
+boot();
+
+</script>
+</body>
+</html>
